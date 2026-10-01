@@ -1393,17 +1393,36 @@ class MemoryGardenApp {
     return 'closed';
   }
 
-  // Draw natural mouth sprite cropped from original artwork
-  drawKongiMouthSprite(ctx, mouthPixelX, mouthPixelY, scaleFactor, mouthKey = 'closed') {
-    const sprite = this.loadedImages['mouth_' + mouthKey] || this.loadedImages['mouth_closed'];
-    if (sprite && sprite.complete) {
-      ctx.save();
-      const dw = 76 * scaleFactor;
-      const dh = 50 * scaleFactor;
-      // Slight smooth opacity transition
-      ctx.drawImage(sprite, mouthPixelX - dw / 2, mouthPixelY - dh / 2, dw, dh);
-      ctx.restore();
+  // Draw natural mouth sprite cropped from original artwork with seamless face integration
+  drawKongiMouthSprite(ctx, w, h, mouthKey = 'closed') {
+    // If closed or silence, the original artwork smiling mouth shows through naturally
+    if (!mouthKey || mouthKey === 'closed') {
+      this.lastMouthKey = 'closed';
+      this.mouthBlendAlpha = 0;
+      return;
     }
+
+    const sprite = this.loadedImages['mouth_' + mouthKey];
+    if (!sprite || !sprite.complete) return;
+
+    // Pixel-perfect mapping of the 120x80 mouth crop from 1376x768 master artwork
+    const dw = w * (120.0 / 1376.0);
+    const dh = h * (80.0 / 768.0);
+    const dx = w * (606.0 / 1376.0);
+    const dy = h * (315.0 / 768.0);
+
+    ctx.save();
+    // Smooth micro-transition between mouth vowel shapes
+    if (this.lastMouthKey !== mouthKey) {
+      this.mouthBlendAlpha = 0.65;
+      this.lastMouthKey = mouthKey;
+    } else {
+      this.mouthBlendAlpha = Math.min(1.0, (this.mouthBlendAlpha || 0.65) + 0.2);
+    }
+
+    ctx.globalAlpha = this.mouthBlendAlpha;
+    ctx.drawImage(sprite, dx, dy, dw, dh);
+    ctx.restore();
   }
 
   // Step 4 Action: Dedicated Voice Test ("안녕하세요. 콩이에요.")
@@ -1874,14 +1893,18 @@ class MemoryGardenApp {
     const togetherImg = togetherImgKey ? this.loadedImages[togetherImgKey] : null;
 
     if (togetherImg && togetherImg.complete) {
-      // 1. Draw Master Scene with gentle breathing pulse & subtle hand wave motion
-      const pulse = 1 + Math.sin(this.charAnim.actionTick * 1.5) * 0.006;
-      const offsetY = Math.sin(this.charAnim.actionTick * 1.5) * 2.5;
+      // 1. Draw Master Scene
+      // For Kong-i first solo scene: keep head and scene completely steady (no rocking/shaking)
+      const isFixedSolo = isFirstSoloScene || togetherImgKey === 'kongi_scene1_wave';
+      const pulse = isFixedSolo ? 1.0 : (1 + Math.sin(this.charAnim.actionTick * 1.5) * 0.006);
+      const offsetY = isFixedSolo ? 0 : (Math.sin(this.charAnim.actionTick * 1.5) * 2.5);
 
       ctx.save();
-      ctx.translate(w / 2, h / 2);
-      ctx.scale(pulse, pulse);
-      ctx.translate(-w / 2, -h / 2 + offsetY);
+      if (!isFixedSolo) {
+        ctx.translate(w / 2, h / 2);
+        ctx.scale(pulse, pulse);
+        ctx.translate(-w / 2, -h / 2 + offsetY);
+      }
       ctx.drawImage(togetherImg, 0, 0, w, h);
       ctx.restore();
 
@@ -1890,10 +1913,10 @@ class MemoryGardenApp {
       const mouthPixelY = (h * mouthCoords.y) + offsetY;
       const scaleFactor = w / 1280;
 
-      if (isFirstSoloScene || togetherImgKey === 'kongi_scene1_wave') {
-        // Render Real Artwork 6-Vowel Sprite (Closed, Ah, Eo, Oh, Woo, Ee)
+      if (isFixedSolo) {
+        // Render Real Artwork 6-Vowel Sprite seamlessly integrated into face
         const mouthKey = (typeof mouthState === 'string') ? mouthState : (mouthState > 0 ? 'a' : 'closed');
-        this.drawKongiMouthSprite(ctx, mouthPixelX, mouthPixelY, scaleFactor, mouthKey);
+        this.drawKongiMouthSprite(ctx, w, h, mouthKey);
       } else if (mouthState > 0 && action !== 'deep_breath') {
         ctx.save();
         ctx.translate(mouthPixelX, mouthPixelY);
@@ -1922,8 +1945,8 @@ class MemoryGardenApp {
         ctx.restore();
       }
 
-      // 3. Eye Blink Overlay on Kong-i's eyes
-      if (this.charAnim.blinkState === 1 && action !== 'deep_breath') {
+      // 3. Eye Blink Overlay on Kong-i's eyes (disabled for fixed solo scene to keep face, glasses, nose 100% original)
+      if (this.charAnim.blinkState === 1 && action !== 'deep_breath' && !isFixedSolo) {
         ctx.save();
         const eyeY = mouthPixelY - ((isFirstSoloScene ? 38 : 28) * scaleFactor);
         const eyeOffset = (isFirstSoloScene ? 32 : 22) * scaleFactor;
