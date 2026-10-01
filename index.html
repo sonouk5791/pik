@@ -41,7 +41,7 @@
           <option value="preset_kongi">📂 프로젝트: 콩이 5분 의자체조 (4인 팀)</option>
           <option value="preset_tori">📂 프로젝트: 토리 10분 인지 건강체조</option>
           <option value="preset_nabi">📂 프로젝트: 나비 유연성 스트레칭</option>
-          <option value="preset_gomi">📂 프로젝트: 곰이 바른자세 척추체조</option>
+          <option value="preset_bori">📂 프로젝트: 보리 바른자세 척추체조</option>
           <option value="custom">📂 내 프로젝트 (새로 만들기)</option>
         </select>
         <button id="btnSaveProject" class="btn btn-secondary btn-sm" title="현재 프로젝트 저장">
@@ -123,21 +123,21 @@
 
       <!-- 8-Member Team Role Introduction Grid -->
       <div class="section-block">
-        <h3 class="section-title">1. 기억정원 20분 의자체조 참여진 (콩이 + 친구들 + 어르신 4명)</h3>
+        <h3 class="section-title">1. 기억정원 공식 원본 캐릭터 고정 (콩이·토리·나비·보리)</h3>
         <div class="character-grid" id="characterGrid">
           <!-- 콩이 (메인 코치) -->
           <div class="character-card active" data-char="kongi">
             <div class="card-radio-mark">★</div>
             <div class="char-thumb-wrap">
-              <img src="assets/char_kongi.jpg" alt="메인 진행 콩이" class="char-thumb" id="thumb-kongi">
+              <img src="assets/characters/kongi.png" alt="원본 콩이" class="char-thumb" id="thumb-kongi" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'char-img-error\'>⚠️ 원본 캐릭터 이미지를 찾을 수 없습니다.</div>';">
             </div>
             <div class="char-details">
-              <div class="char-name">콩이 <span class="char-badge" style="background:#059669; color:#fff;">메인 진행 / 센터</span></div>
-              <p class="char-role">화면 중앙 대형 배치 & 대표 음성 립싱크</p>
+              <div class="char-name">콩이 <span class="char-badge" style="background:#059669; color:#fff;">메인 코치 / 센터</span></div>
+              <p class="char-role">등록된 원본 콩이 이미지 100% 고정 & 립싱크</p>
               <div class="char-tags">
+                <span class="tag">#원본고정</span>
                 <span class="tag">#안경쓴강아지</span>
-                <span class="tag">#화면중앙</span>
-                <span class="tag">#대표음성</span>
+                <span class="tag">#대표코치</span>
               </div>
             </div>
           </div>
@@ -146,14 +146,14 @@
           <div class="character-card active" data-char="tori" style="border-color:#F59E0B;">
             <div class="card-radio-mark">✓</div>
             <div class="char-thumb-wrap">
-              <img src="assets/char_tori.jpg" alt="보조 토리" class="char-thumb" id="thumb-tori">
+              <img src="assets/characters/tori.png" alt="원본 토리" class="char-thumb" id="thumb-tori" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'char-img-error\'>⚠️ 원본 캐릭터 이미지를 찾을 수 없습니다.</div>';">
             </div>
             <div class="char-details">
               <div class="char-name">토리 <span class="char-badge" style="background:#F59E0B; color:#fff;">활기 보조</span></div>
-              <p class="char-role">활기차고 씩씩하게 의자체조 따라하기</p>
+              <p class="char-role">등록된 원본 토리 이미지 100% 고정</p>
               <div class="char-tags">
+                <span class="tag">#원본고정</span>
                 <span class="tag">#다람쥐</span>
-                <span class="tag">#좌측배치</span>
                 <span class="tag">#리듬체조</span>
               </div>
             </div>
@@ -163,31 +163,31 @@
           <div class="character-card active" data-char="nabi" style="border-color:#8B5CF6;">
             <div class="card-radio-mark">✓</div>
             <div class="char-thumb-wrap">
-              <img src="assets/char_nabi.jpg" alt="보조 나비" class="char-thumb" id="thumb-nabi">
+              <img src="assets/characters/nabi.png" alt="원본 나비" class="char-thumb" id="thumb-nabi" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'char-img-error\'>⚠️ 원본 캐릭터 이미지를 찾을 수 없습니다.</div>';">
             </div>
             <div class="char-details">
               <div class="char-name">나비 <span class="char-badge" style="background:#8B5CF6; color:#fff;">유연 보조</span></div>
-              <p class="char-role">차분하고 부드럽게 의자체조 따라하기</p>
+              <p class="char-role">등록된 원본 나비 이미지 100% 고정</p>
               <div class="char-tags">
+                <span class="tag">#원본고정</span>
                 <span class="tag">#고양이</span>
-                <span class="tag">#우측배치</span>
-                <span class="tag">#부드러운스트레칭</span>
+                <span class="tag">#스트레칭</span>
               </div>
             </div>
           </div>
 
-          <!-- 곰이 (안정 곰) -->
-          <div class="character-card active" data-char="gomi" style="border-color:#B45309;">
+          <!-- 보리 (안정 곰) -->
+          <div class="character-card active" data-char="bori" data-alias="gomi" style="border-color:#B45309;">
             <div class="card-radio-mark">✓</div>
             <div class="char-thumb-wrap">
-              <img src="assets/char_gomi.jpg" alt="보조 곰이" class="char-thumb" id="thumb-gomi">
+              <img src="assets/characters/bori.png" alt="원본 보리" class="char-thumb" id="thumb-bori" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'char-img-error\'>⚠️ 원본 캐릭터 이미지를 찾을 수 없습니다.</div>';">
             </div>
             <div class="char-details">
-              <div class="char-name">곰이 <span class="char-badge" style="background:#B45309; color:#fff;">안정 보조</span></div>
-              <p class="char-role">안정감 있고 천천히 바른 자세 따라하기</p>
+              <div class="char-name">보리 <span class="char-badge" style="background:#B45309; color:#fff;">안정 보조</span></div>
+              <p class="char-role">등록된 원본 보리 이미지 100% 고정</p>
               <div class="char-tags">
+                <span class="tag">#원본고정</span>
                 <span class="tag">#곰</span>
-                <span class="tag">#후방안정배치</span>
                 <span class="tag">#바른자세</span>
               </div>
             </div>

@@ -137,7 +137,7 @@ const PRESETS = {
 어르신들, 오늘 20분 동안 정말 훌륭하게 잘하셨어요! 늘 건강하세요!`
   },
   preset_kongi: {
-    name: '기억정원 4인 의자체조 (콩이·토리·나비·곰이 함께 운동)',
+    name: '기억정원 4인 의자체조 (콩이·토리·나비·보리 함께 운동)',
     char: 'kongi',
     duration: 300,
     bg: 'bg_daycare',
@@ -180,14 +180,27 @@ const PRESETS = {
 몸의 긴장을 풀고 편안한 미소를 지어보세요.
 잘하셨어요. 참 편안해지셨죠?`
   },
-  preset_gomi: {
-    name: '곰이 바른자세 척추체조',
-    char: 'gomi',
+  preset_bori: {
+    name: '보리 바른자세 척추체조 (안정 코치)',
+    char: 'bori',
     duration: 300,
     bg: 'bg_daycare',
     voice: { gender: 'male_gentle', tone: 'friendly', pitch: 0.8, speed: 0.85, emotion: 'warm' },
     bgm: 'spring_garden',
-    script: `반갑습니다. 든든한 곰이와 함께 바른 자세를 만들어 보아요.
+    script: `반갑습니다. 든든한 보리와 함께 바른 자세를 만들어 보아요.
+의자 등받이에 등을 곧게 펴고 앉아봅니다.
+양팔을 앞으로 뻗었다가 가슴 옆으로 천천히 당겨보세요.
+무릎을 가볍게 토닥여 주시고요.
+천천히 호흡을 정리하며 마무리하겠습니다. 참 잘하셨습니다.`
+  },
+  preset_gomi: {
+    name: '보리 바른자세 척추체조 (안정 코치)',
+    char: 'bori',
+    duration: 300,
+    bg: 'bg_daycare',
+    voice: { gender: 'male_gentle', tone: 'friendly', pitch: 0.8, speed: 0.85, emotion: 'warm' },
+    bgm: 'spring_garden',
+    script: `반갑습니다. 든든한 보리와 함께 바른 자세를 만들어 보아요.
 의자 등받이에 등을 곧게 펴고 앉아봅니다.
 양팔을 앞으로 뻗었다가 가슴 옆으로 천천히 당겨보세요.
 무릎을 가볍게 토닥여 주시고요.
@@ -339,8 +352,8 @@ class MemoryGardenApp {
         charCards.forEach(c => c.classList.remove('active'));
         document.getElementById('charUploadCard')?.classList.remove('active');
         card.classList.add('active');
-        this.selectedChar = card.dataset.char;
-        this.showToast(`체조 코치로 '${this.getCharName(this.selectedChar)}'를 선택했습니다.`, 'info');
+        this.selectedChar = (card.dataset.char === 'gomi') ? 'bori' : card.dataset.char;
+        this.showToast(`체조 코치로 '${this.getCharName(this.selectedChar)}'를 선택했습니다 (원본 이미지 고정).`, 'info');
       });
     });
 
@@ -550,17 +563,19 @@ class MemoryGardenApp {
   // Preload mascot and background images
   preloadAssets() {
     const urls = {
-      char_kongi: 'assets/char_kongi.jpg',
-      char_tori: 'assets/char_tori.jpg',
-      char_nabi: 'assets/char_nabi.jpg',
-      char_gomi: 'assets/char_gomi.jpg',
+      // 100% Fixed Original Mascot Characters (Strict Identity Lock, No AI regeneration)
+      char_kongi: 'assets/characters/kongi.png',
+      char_tori: 'assets/characters/tori.png',
+      char_nabi: 'assets/characters/nabi.png',
+      char_bori: 'assets/characters/bori.png',
+      char_gomi: 'assets/characters/bori.png',
       bg_daycare: 'assets/bg_daycare.jpg',
       bg_garden: 'assets/bg_garden.jpg',
       bg_livingroom: 'assets/bg_livingroom.jpg',
       // Master Reference Kong-i Assets (Strict Identity Lock)
-      kongi_scene1_wave: 'assets/kongi_scene1_wave.jpg',
-      kongi_original_master: 'assets/kongi_original_master.png',
-      // Seamless Master Scene Frames for 6 Korean Phonemes (Zero sticker border, bit-identical face)
+      kongi_scene1_wave: 'assets/characters/kongi.png',
+      kongi_original_master: 'assets/characters/kongi.png',
+      // Seamless Master Scene Frames for 6 Korean Phonemes
       kongi_scene_closed: 'assets/kongi_scene_closed.png',
       kongi_scene_a: 'assets/kongi_scene_a.png',
       kongi_scene_eo: 'assets/kongi_scene_eo.png',
@@ -582,7 +597,7 @@ class MemoryGardenApp {
       scene_20m_4_clap_hands: 'assets/scene_20m_4_clap_hands.jpg',
       scene_20m_5_knee_ankle: 'assets/scene_20m_5_knee_ankle.jpg',
       scene_20m_6_stretch_finish: 'assets/scene_20m_6_stretch_finish.jpg',
-      // 4-Character Group Exercise Scenes (Kong-i, Tori, Nabi, Gomi)
+      // 4-Character Group Exercise Scenes (Kong-i, Tori, Nabi, Bori)
       scene_group_wave: 'assets/scene_group_wave.jpg',
       scene_group_arms_up: 'assets/scene_group_arms_up.jpg',
       scene_group_arms_side: 'assets/scene_group_arms_side.jpg',
@@ -609,6 +624,10 @@ class MemoryGardenApp {
       img.src = src;
       img.onload = () => {
         this.loadedImages[key] = img;
+      };
+      img.onerror = () => {
+        console.error(`[기억정원] 원본 캐릭터 이미지를 찾을 수 없습니다: ${src}`);
+        this.loadedImages[key] = { error: true, src: src };
       };
     }
   }
@@ -678,14 +697,14 @@ class MemoryGardenApp {
   }
 
   getCharName(charId) {
-    const map = { kongi: '콩이', tori: '토리', nabi: '나비', gomi: '곰이', custom: '직접 등록 캐릭터' };
+    const map = { kongi: '콩이', tori: '토리', nabi: '나비', bori: '보리', gomi: '보리', custom: '직접 등록 캐릭터' };
     return map[charId] || charId;
   }
 
   // Handle Project Presets
   loadProject(presetKey) {
     const p = PRESETS[presetKey] || PRESETS.preset_kongi;
-    this.selectedChar = p.char;
+    this.selectedChar = (p.char === 'gomi') ? 'bori' : p.char;
     this.targetDuration = p.duration;
     this.selectedBg = p.bg;
     this.voiceSettings = { ...p.voice };
@@ -693,7 +712,10 @@ class MemoryGardenApp {
 
     // Update UI
     document.querySelectorAll('.character-card').forEach(card => {
-      card.classList.toggle('active', card.dataset.char === p.char);
+      const match = (card.dataset.char === this.selectedChar) || 
+                    (card.dataset.alias === this.selectedChar) ||
+                    (this.selectedChar === 'bori' && (card.dataset.char === 'gomi' || card.dataset.char === 'bori'));
+      card.classList.toggle('active', !!match);
     });
 
     document.querySelectorAll('.duration-btn').forEach(btn => {
@@ -1632,7 +1654,7 @@ class MemoryGardenApp {
       num: 1,
       script: testScript,
       action: 'wave',
-      actionName: '손 흔들며 시작 인사 (콩이·토리·나비·곰이 함께)',
+      actionName: '손 흔들며 시작 인사 (콩이·토리·나비·보리 함께)',
       bg: 'bg_daycare'
     };
 
@@ -1674,10 +1696,10 @@ class MemoryGardenApp {
     }
 
     const statusText = document.getElementById('testStatusText');
-    if (statusText) statusText.innerHTML = '<span style="color:#D97706; font-weight:700;">상태: 🎬 첫 장면 4인 체조팀(콩이·토리·나비·곰이) & 실제 음성 립싱크 렌더링 중...</span>';
+    if (statusText) statusText.innerHTML = '<span style="color:#D97706; font-weight:700;">상태: 🎬 첫 장면 4인 체조팀(콩이·토리·나비·보리) & 실제 음성 립싱크 렌더링 중...</span>';
     
-    this.logPipeline('🎬 [첫 장면 테스트] 콩이·토리·나비·곰이 4인 체조팀 & 콩이 대표 음성 렌더링 시작...', 'info');
-    this.logPipeline('🔒 4인 캐릭터 락: 콩이(중앙 메인 안경 강아지), 토리(다람쥐), 나비(고양이), 곰이(곰) 100% 고정 유지', 'info');
+    this.logPipeline('🎬 [첫 장면 테스트] 콩이·토리·나비·보리 4인 체조팀 & 콩이 대표 음성 렌더링 시작...', 'info');
+    this.logPipeline('🔒 4인 원본 캐릭터 락: 콩이(안경 강아지), 토리(다람쥐), 나비(고양이), 보리(곰) 100% 원본 유지', 'info');
     this.logPipeline('🗣️ 대표 음성: 콩이 실제 한국어 신경망 오디오 트랙 재생 (Volume 1.0, Muted: false)', 'info');
 
     setTimeout(() => {
@@ -1712,7 +1734,7 @@ class MemoryGardenApp {
       num: 1,
       script: targetScript,
       action: 'wave',
-      actionName: '손 흔들며 시작 인사 (콩이·토리·나비·곰이 함께)',
+      actionName: '손 흔들며 시작 인사 (콩이·토리·나비·보리 함께)',
       bg: 'bg_daycare'
     };
 
@@ -1758,25 +1780,26 @@ class MemoryGardenApp {
     ctx.save();
     ctx.fillStyle = 'rgba(6, 95, 70, 0.92)';
     ctx.beginPath();
-    ctx.roundRect(w * 0.04, 14, 320, 28, 14);
+    ctx.roundRect(w * 0.04, 14, 340, 28, 14);
     ctx.fill();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 12px Pretendard, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('🔒 콩이·토리·나비·곰이 4인 체조팀 일관성 락 가동 중', w * 0.04 + 14, 32);
+    ctx.fillText('🔒 콩이·토리·나비·보리 원본 캐릭터 100% 고정 락', w * 0.04 + 14, 32);
     ctx.restore();
 
     // 2. Real Audio & Lipsync Indicator Badge
     ctx.save();
     ctx.fillStyle = 'rgba(217, 119, 6, 0.92)';
     ctx.beginPath();
-    ctx.roundRect(w - 240, 14, 210, 28, 14);
+    ctx.roundRect(w - 260, 14, 230, 28, 14);
     ctx.fill();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 11px Pretendard, sans-serif';
     ctx.textAlign = 'center';
     const mouthNames = { closed: '입닫기', a: '아', eo: '어', o: '오', u: '우', i: '이' };
-    ctx.fillText(`🔊 콩이 대표 음성 | 립싱크: [${mouthNames[currentMouth] || currentMouth}]`, w - 135, 32);
+    const charName = this.getCharName(this.selectedChar);
+    ctx.fillText(`🔊 ${charName} 음성 | 기준: [원본 ${charName}] [${mouthNames[currentMouth] || currentMouth}]`, w - 145, 32);
     ctx.restore();
 
     // 3. Subtitle Bar
@@ -2022,6 +2045,15 @@ class MemoryGardenApp {
   drawTogetherExerciseScene(ctx, w, h, scene, mouthState, isTest = false) {
     const action = scene?.action || 'wave';
     const isFirstScene = (isTest || scene?.num === 1 || (action === 'wave' && this.currentSceneIdx === 0));
+
+    // If an individual original mascot (Tori, Nabi, Bori, or Custom) is selected as coach:
+    if (this.selectedChar !== 'kongi') {
+      this.drawCanvasBackground(ctx, w, h, scene?.bg || this.selectedBg);
+      this.drawSeniorChair(ctx, w / 2, h * 0.72);
+      this.drawMascotCharacter(ctx, w / 2, h * 0.60 + this.charAnim.breathOffset, 0.74, action, mouthState);
+      this.drawSeniorSafetyNoticeBanner(ctx, w, h);
+      return;
+    }
 
     // Choose 20-minute 6-course master image or group exercise action
     let groupImgKey = 'scene_20m_1_greeting';
@@ -2418,27 +2450,56 @@ class MemoryGardenApp {
     ctx.scale(scale * bodyScaleX, scale * bodyScaleY);
     ctx.translate(0, bodyYOffset);
 
-    // Render character image
+    // Render original character image strictly (No AI regeneration, No fallback to random animals)
     let charImg = null;
+    const charKey = (this.selectedChar === 'gomi') ? 'bori' : this.selectedChar;
     if (this.selectedChar === 'custom' && this.loadedImages['char_custom']) {
       charImg = this.loadedImages['char_custom'];
     } else {
-      const key = `char_${this.selectedChar}`;
-      charImg = this.loadedImages[key] || this.loadedImages['char_kongi'];
+      const key = `char_${charKey}`;
+      charImg = this.loadedImages[key];
     }
 
-    const imgW = 340;
+    // Strict Error Handling: Never fallback to random or AI-generated character!
+    if (!charImg || charImg.error || !charImg.complete || (charImg.naturalWidth === 0 && !charImg.width)) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(254, 226, 226, 0.96)';
+      ctx.strokeStyle = '#DC2626';
+      ctx.lineWidth = 2.5;
+      const boxW = 380;
+      const boxH = 88;
+      ctx.beginPath();
+      ctx.roundRect(-boxW / 2, -boxH / 2, boxW, boxH, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#DC2626';
+      ctx.font = 'bold 16px "Pretendard", "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚠️ 원본 캐릭터 이미지를 찾을 수 없습니다.', 0, -12);
+
+      ctx.font = '12px "Pretendard", "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#991B1B';
+      ctx.fillText(`(필요 원본 파일: assets/characters/${charKey}.png)`, 0, 16);
+      ctx.restore();
+      return;
+    }
+
+    const natW = charImg.naturalWidth || 340;
+    const natH = charImg.naturalHeight || 340;
+    const aspect = natW / natH;
     const imgH = 340;
+    const imgW = imgH * aspect;
 
     if (charImg && charImg.complete) {
-      // Draw character with circular clip or rounded shadow
       ctx.save();
       // Drop shadow for depth
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.22)';
       ctx.shadowBlur = 18;
       ctx.shadowOffsetY = 10;
 
-      // Draw character body
+      // Draw original character preserving exact aspect ratio and transparency
       ctx.drawImage(charImg, -imgW / 2, -imgH / 2, imgW, imgH);
       ctx.restore();
 

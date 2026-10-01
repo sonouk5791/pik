@@ -2112,3 +2112,23 @@ body {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Original Character Fallback Error Display */
+.char-img-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #DC2626;
+  background: #FEE2E2;
+  border: 1px dashed #EF4444;
+  border-radius: var(--radius-sm, 8px);
+  padding: 8px 6px;
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  box-sizing: border-box;
+}
