@@ -110,12 +110,13 @@ http://127.0.0.1:3000
 vercel deploy --yes
 ```
 
-### GitHub 푸시
+### 라이브 배포 및 리포지토리
+- **GitHub 저장소**: https://github.com/sonouk5791/pik
+- **Vercel 프로덕션 라이브 URL**: https://pik-woad.vercel.app/
+
+### GitHub 푸시 가이드
 ```bash
-git init
 git add .
-git commit -m "feat: 기억정원 AI 영상 만들기 플랫폼 완성 및 어르신 일체형 체조 모드 반영"
-git branch -M main
-git remote add origin https://github.com/<사용자계정>/<저장소이름>.git
-git push -u origin main
+git commit -m "feat: 업데이트 내용 요약"
+git push origin main
 ```
