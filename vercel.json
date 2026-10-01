@@ -1,3 +1,7 @@
 {
-  "outputDirectory": "."
+  "cleanUrls": true,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
 }
