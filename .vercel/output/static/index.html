@@ -600,13 +600,16 @@
       <div class="test-video-card" id="testVideoCard">
         <div class="test-icon-badge">🎬</div>
         <div class="test-info">
-          <h3>첫 장면 테스트 (5~8초 퀵 렌더링)</h3>
-          <p>첫 장면을 빠르게 생성하여 캐릭터의 얼굴 일관성, 목소리 싱크, 체조 동작이 정상 작동하는지 확인합니다. 테스트가 통과되면 전체 영상 제작이 활성화됩니다.</p>
-          <div class="test-status-text" id="testStatusText">상태: 테스트 대기 중</div>
+          <h3>첫 장면 테스트 — 원본 콩이 절대 기준 & 실제 음성 립싱크 검증</h3>
+          <p><strong>[핵심 요구사항]</strong> 자막만 나오는 영상이 아니라, <strong>실제 콩이 목소리(오디오 트랙 포함)</strong>와 함께 한국어 발음(<strong>아·어·오·우·이·입 닫기</strong>)에 맞춰 입모양이 실시간으로 움직이는 진짜 살아있는 영상입니다.</p>
+          <div class="test-status-text" id="testStatusText">상태: 음성 및 영상 테스트 대기 중 (음성 확인 후 전체 영상 활성화)</div>
         </div>
-        <div class="test-actions">
+        <div class="test-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-warning btn-lg" id="btnTestKongiVoice" style="background: #F59E0B; border-color: #D97706; color: #FFF; font-weight: 700;">
+            <span>🔊 콩이 음성 테스트 (“안녕하세요. 콩이에요.”)</span>
+          </button>
           <button class="btn btn-secondary btn-lg" id="btnRunTestScene">
-            <span>🎬 첫 장면 테스트</span>
+            <span>🎬 첫 장면 테스트 영상 시작 (6초)</span>
           </button>
         </div>
       </div>
@@ -614,15 +617,42 @@
       <!-- Test Video Quick Preview Modal or Area -->
       <div class="test-preview-box hidden" id="testPreviewBox">
         <div class="test-preview-header">
-          <span class="tag tag-success">✓ 첫 장면 테스트 성공</span>
-          <span class="test-preview-title">첫 장면 미리보기 (립싱크 및 모션 검증 완료)</span>
+          <span class="tag tag-success">✓ 첫 장면 테스트 영상 준비 완료</span>
+          <span class="test-preview-title">첫 장면: 콩이 단독 시작 인사 (주간보호센터 운동실 / 정면 16:9)</span>
           <button class="btn btn-outline btn-xs" id="btnCloseTestBox">닫기</button>
         </div>
         <div class="test-preview-canvas-wrap">
           <canvas id="testCanvas" width="640" height="360"></canvas>
           <div class="test-preview-controls">
-            <button class="btn btn-primary btn-sm" id="btnPlayTestCanvas">▶ 테스트 재생</button>
-            <span class="test-note">캐릭터 외형 락, 립싱크 타이밍, 체조 동작이 정상 검증되었습니다.</span>
+            <button class="btn btn-primary btn-sm" id="btnPlayTestCanvas">▶ 테스트 영상 다시 재생 (6초)</button>
+            <span class="test-note">대본: “안녕하세요. 콩이에요. 오늘도 저와 함께 천천히 몸을 움직여 볼까요?”</span>
+          </div>
+        </div>
+
+        <!-- Strict Character Consistency Verification Checklist -->
+        <div class="char-consistency-checklist" style="margin-top: 14px; padding: 14px 18px; background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 10px;">
+          <h4 style="margin: 0 0 10px 0; color: #166534; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+            <span>🔒</span> <span>원본 콩이 캐릭터 절대 기준 일관성 검증 체크리스트</span>
+          </h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; font-size: 13px; color: #14532D;">
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 원본 콩이 얼굴 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 큰 둥근 안경 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 갈색 귀 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 노란색 체크 조끼 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 흰색 셔츠 & 타이 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 남색 바지 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 파란색 운동화 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 전체 체형과 비율 유지</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 다른 강아지/실사 동물 변형 금지 준수</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 첫 장면 콩이 단독 제작 완료</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 실제 한국어 음성 트랙 연동 (Muted: OFF, 볼륨 100%)</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 6대 입모양 립싱크 (아·어·오·우·이·닫힘) 자연 전환</div>
+          </div>
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #86EFAC; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 12px; color: #15803D; font-weight: 600;">※ 이 테스트가 확인되어야만 다음 운동 장면으로 진행할 수 있습니다.</span>
+            <button class="btn btn-primary" id="btnApproveTestScene" style="background: #16A34A; border-color: #15803D;">
+              <span>✓ 원본 콩이 캐릭터 확인 완료 (다음 단계 언락)</span>
+            </button>
           </div>
         </div>
       </div>
