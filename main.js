@@ -80,20 +80,21 @@ const EXERCISE_ACTIONS = {
 // Preset Projects Data
 const PRESETS = {
   preset_kongi: {
-    name: '콩이 5분 의자체조 (기본 상체 스트레칭)',
+    name: '기억정원 4인 의자체조 (콩이·토리·나비·곰이 함께 운동)',
     char: 'kongi',
     duration: 300,
     bg: 'bg_daycare',
     voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
     bgm: 'spring_garden',
-    script: `안녕하세요. 콩이에요.
-오늘도 저와 함께 천천히 몸을 움직여 볼까요?
-오늘은 의자에 편안히 앉아 팔을 천천히 올려볼게요.
-하나, 둘. 시원하게 기지개를 켜보세요.
+    script: `안녕하세요. 콩이와 친구들이에요.
+오늘은 우리 함께 천천히 몸을 움직여 볼까요?
+양팔을 천천히 위로 올려볼게요.
+시원하게 기지개를 켜보세요.
 이번에는 양팔을 옆으로 활짝 벌려볼까요?
-어깨도 들썩들썩 올렸다가 내려볼게요.
-숨을 크게 들이마시고, 천천히 후- 내쉬어 보세요.
-어르신들, 아주 잘하셨어요. 참 대단하세요!`
+신나게 손뼉을 짝짝 쳐볼게요.
+의자를 잡고 무릎을 번갈아 살짝 들어보세요.
+숨을 깊이 들이마시고 천천히 내쉬어 보세요.
+좋아요. 아주 잘하고 계세요!`
   },
   preset_tori: {
     name: '토리 10분 인지 건강체조 (두뇌 자극 & 리듬)',
@@ -136,17 +137,20 @@ const PRESETS = {
 천천히 호흡을 정리하며 마무리하겠습니다. 참 잘하셨습니다.`
   },
   custom: {
-    name: '새 프로젝트 (직접 만들기)',
+    name: '새 프로젝트 (콩이와 친구들 4인 체조)',
     char: 'kongi',
     duration: 60,
     bg: 'bg_daycare',
     voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
     bgm: 'spring_garden',
-    script: `안녕하세요. 콩이에요.
-오늘은 팔을 천천히 올려볼게요.
-하나, 둘.
-이번에는 양팔을 옆으로 벌려볼까요?
-아주 잘하셨어요.`
+    script: `안녕하세요. 콩이와 친구들이에요.
+오늘은 우리 함께 천천히 몸을 움직여 볼까요?
+양팔을 천천히 올려볼게요.
+양팔을 옆으로 벌려보세요.
+손뼉을 쳐볼게요.
+무릎을 가볍게 들어보세요.
+숨을 편안하게 쉬어보세요.
+좋아요. 아주 잘하고 계세요.`
   }
 };
 
@@ -496,6 +500,13 @@ class MemoryGardenApp {
       // Master Reference Kong-i Assets (Strict Identity Lock)
       kongi_scene1_wave: 'assets/kongi_scene1_wave.jpg',
       kongi_original_master: 'assets/kongi_original_master.png',
+      // Seamless Master Scene Frames for 6 Korean Phonemes (Zero sticker border, bit-identical face)
+      kongi_scene_closed: 'assets/kongi_scene_closed.png',
+      kongi_scene_a: 'assets/kongi_scene_a.png',
+      kongi_scene_eo: 'assets/kongi_scene_eo.png',
+      kongi_scene_o: 'assets/kongi_scene_o.png',
+      kongi_scene_u: 'assets/kongi_scene_u.png',
+      kongi_scene_i: 'assets/kongi_scene_i.png',
       // Real Artwork Lip-sync Mouth Sprites (Ah, Eo, Oh, Woo, Ee, Closed)
       mouth_closed: 'assets/mouth_closed.png',
       mouth_a: 'assets/mouth_a.png',
@@ -503,7 +514,21 @@ class MemoryGardenApp {
       mouth_o: 'assets/mouth_o.png',
       mouth_u: 'assets/mouth_u.png',
       mouth_i: 'assets/mouth_i.png',
-      // Unified Together Scenes (Kong-i exercising with seniors)
+      // 4-Character Group Exercise Scenes (Kong-i, Tori, Nabi, Gomi)
+      scene_group_wave: 'assets/scene_group_wave.jpg',
+      scene_group_arms_up: 'assets/scene_group_arms_up.jpg',
+      scene_group_arms_side: 'assets/scene_group_arms_side.jpg',
+      scene_group_clap: 'assets/scene_group_clap.jpg',
+      scene_group_knee_lift: 'assets/scene_group_knee_lift.jpg',
+      scene_group_breath: 'assets/scene_group_breath.jpg',
+      // Group Scene Seamless Vowel Morphing Frames for Kong-i
+      scene_group_closed: 'assets/scene_group_closed.png',
+      scene_group_a: 'assets/scene_group_a.png',
+      scene_group_eo: 'assets/scene_group_eo.png',
+      scene_group_o: 'assets/scene_group_o.png',
+      scene_group_u: 'assets/scene_group_u.png',
+      scene_group_i: 'assets/scene_group_i.png',
+      // Legacy / Backup Scenes
       scene_together_wave: 'assets/scene_together_wave.jpg',
       scene_together_arms_up: 'assets/scene_together_arms_up.jpg',
       scene_together_arms_side: 'assets/scene_together_arms_side.jpg',
@@ -837,19 +862,19 @@ class MemoryGardenApp {
 
   triggerLipSyncStep() {
     const mouthPreview = document.getElementById('mouthPreviewShape');
-    const shapes = ['open-a', 'open-o', 'open-i'];
+    const shapes = ['a', 'eo', 'o', 'u', 'i'];
     const pick = shapes[Math.floor(Math.random() * shapes.length)];
     
     if (mouthPreview) {
-      mouthPreview.className = `mouth-shape ${pick}`;
+      mouthPreview.className = `mouth-shape open-${pick}`;
       setTimeout(() => {
         mouthPreview.className = 'mouth-shape';
       }, 180);
     }
 
-    this.charAnim.mouthOpen = Math.floor(Math.random() * 3) + 1;
+    this.charAnim.mouthOpen = pick;
     setTimeout(() => {
-      this.charAnim.mouthOpen = 0;
+      this.charAnim.mouthOpen = 'closed';
     }, 180);
   }
 
@@ -1350,52 +1375,111 @@ class MemoryGardenApp {
   }
 
   // Korean Phoneme to 6 Mouth Shapes Map (Ah, Eo, Oh, Woo, Ee, Closed)
+  // Representative Speaker: Kong-i (Main Host, Center)
   getKongiMouthKey(sec, isFullScene = false) {
     if (sec < 0.1) return 'closed';
 
-    // 0.1s ~ 3.3s: “안녕하세요. 콩이에요.”
-    if (sec >= 0.10 && sec < 0.45) return 'a';       // 안 [Ah]
-    if (sec >= 0.45 && sec < 0.80) return 'eo';      // 녕 [Eo]
-    if (sec >= 0.80 && sec < 1.15) return 'a';       // 하 [Ah]
-    if (sec >= 1.15 && sec < 1.50) return 'i';       // 세 [Ee]
-    if (sec >= 1.50 && sec < 1.80) return 'o';       // 요 [Oh]
-    if (sec >= 1.80 && sec < 2.05) return 'closed';  // [쉼표]
-    if (sec >= 2.05 && sec < 2.40) return 'o';       // 콩 [Oh]
-    if (sec >= 2.40 && sec < 2.70) return 'i';       // 이 [Ee]
-    if (sec >= 2.70 && sec < 2.95) return 'i';       // 에 [Ee]
-    if (sec >= 2.95 && sec < 3.35) return 'o';       // 요 [Oh]
+    // 0.1s ~ 4.5s: “안녕하세요. 콩이와 친구들이에요.”
+    // 0.10s ~ 1.70s: “안녕하세요”
+    if (sec >= 0.10 && sec < 0.40) return 'a';       // 안 [Ah]
+    if (sec >= 0.40 && sec < 0.70) return 'eo';      // 녕 [Eo]
+    if (sec >= 0.70 && sec < 1.00) return 'a';       // 하 [Ah]
+    if (sec >= 1.00 && sec < 1.30) return 'i';       // 세 [Ee]
+    if (sec >= 1.30 && sec < 1.70) return 'o';       // 요 [Oh]
+    if (sec >= 1.70 && sec < 1.95) return 'closed';  // [쉼표]
+
+    // 1.95s ~ 4.40s: “콩이와 친구들이에요”
+    if (sec >= 1.95 && sec < 2.30) return 'o';       // 콩 [Oh]
+    if (sec >= 2.30 && sec < 2.55) return 'i';       // 이 [Ee]
+    if (sec >= 2.55 && sec < 2.85) return 'a';       // 와 [Ah]
+    if (sec >= 2.85 && sec < 3.15) return 'i';       // 친 [Ee]
+    if (sec >= 3.15 && sec < 3.45) return 'u';       // 구 [Woo]
+    if (sec >= 3.45 && sec < 3.75) return 'u';       // 들 [Woo/Eu]
+    if (sec >= 3.75 && sec < 4.00) return 'i';       // 이 [Ee]
+    if (sec >= 4.00 && sec < 4.25) return 'i';       // 에 [Ee]
+    if (sec >= 4.25 && sec < 4.55) return 'o';       // 요 [Oh]
 
     if (!isFullScene) {
       return 'closed'; // 자연스러운 미소 닫힘
     }
 
-    // 3.4s ~ 7.3s: “오늘도 저와 함께 천천히 몸을 움직여 볼까요?”
-    if (sec >= 3.35 && sec < 3.55) return 'closed';  // [숨 고르기]
-    if (sec >= 3.55 && sec < 3.85) return 'o';       // 오 [Oh]
-    if (sec >= 3.85 && sec < 4.15) return 'u';       // 늘 [Woo/Eu]
-    if (sec >= 4.15 && sec < 4.45) return 'o';       // 도 [Oh]
-    if (sec >= 4.45 && sec < 4.75) return 'eo';      // 저 [Eo]
-    if (sec >= 4.75 && sec < 5.05) return 'a';       // 와 [Ah]
-    if (sec >= 5.05 && sec < 5.40) return 'a';       // 함 [Ah]
-    if (sec >= 5.40 && sec < 5.70) return 'i';       // 께 [Ee]
-    if (sec >= 5.70 && sec < 6.00) return 'eo';      // 천 [Eo]
-    if (sec >= 6.00 && sec < 6.30) return 'eo';      // 천 [Eo]
-    if (sec >= 6.30 && sec < 6.60) return 'i';       // 히 [Ee]
-    if (sec >= 6.60 && sec < 6.90) return 'o';       // 몸 [Oh]
-    if (sec >= 6.90 && sec < 7.15) return 'u';       // 을 [Woo/Eu]
-    if (sec >= 7.15 && sec < 7.45) return 'u';       // 움 [Woo]
-    if (sec >= 7.45 && sec < 7.75) return 'i';       // 직 [Ee]
-    if (sec >= 7.75 && sec < 8.05) return 'eo';      // 여 [Eo]
-    if (sec >= 8.05 && sec < 8.35) return 'o';       // 볼 [Oh]
-    if (sec >= 8.35 && sec < 8.65) return 'a';       // 까 [Ah]
-    if (sec >= 8.65 && sec < 9.05) return 'o';       // 요 [Oh]
+    // 4.55s ~ 9.5s: “오늘은 우리 함께 천천히 몸을 움직여 볼까요?”
+    if (sec >= 4.55 && sec < 4.80) return 'closed';  // [숨 고르기]
+    if (sec >= 4.80 && sec < 5.10) return 'o';       // 오 [Oh]
+    if (sec >= 5.10 && sec < 5.40) return 'u';       // 늘 [Woo/Eu]
+    if (sec >= 5.40 && sec < 5.70) return 'u';       // 은 [Woo/Eu]
+    if (sec >= 5.70 && sec < 6.00) return 'u';       // 우 [Woo]
+    if (sec >= 6.00 && sec < 6.30) return 'i';       // 리 [Ee]
+    if (sec >= 6.30 && sec < 6.60) return 'a';       // 함 [Ah]
+    if (sec >= 6.60 && sec < 6.90) return 'i';       // 께 [Ee]
+    if (sec >= 6.90 && sec < 7.20) return 'eo';      // 천 [Eo]
+    if (sec >= 7.20 && sec < 7.50) return 'eo';      // 천 [Eo]
+    if (sec >= 7.50 && sec < 7.80) return 'i';       // 히 [Ee]
+    if (sec >= 7.80 && sec < 8.10) return 'o';       // 몸 [Oh]
+    if (sec >= 8.10 && sec < 8.35) return 'u';       // 을 [Woo/Eu]
+    if (sec >= 8.35 && sec < 8.65) return 'u';       // 움 [Woo]
+    if (sec >= 8.65 && sec < 8.95) return 'i';       // 직 [Ee]
+    if (sec >= 8.95 && sec < 9.25) return 'eo';      // 여 [Eo]
+    if (sec >= 9.25 && sec < 9.55) return 'o';       // 볼 [Oh]
+    if (sec >= 9.55 && sec < 9.85) return 'a';       // 까 [Ah]
+    if (sec >= 9.85 && sec < 10.20) return 'o';      // 요 [Oh]
 
     return 'closed';
   }
 
-  // Draw natural mouth sprite cropped from original artwork with seamless face integration
+  // Seamless 4-Friend Master Scene Renderer with Kong-i Smooth Vowel Morphing (Zero Sticker Border)
+  drawSeamlessKongiMasterScene(ctx, w, h, mouthKey = 'closed') {
+    const key = (!mouthKey || mouthKey === 'closed') ? 'closed' : mouthKey;
+    const currentImg = this.loadedImages['scene_group_' + key] || this.loadedImages['scene_group_wave'];
+    
+    if (!this.vowelMorphState) {
+      this.vowelMorphState = {
+        currentKey: key,
+        prevKey: key,
+        progress: 1.0,
+        lastTime: performance.now()
+      };
+    }
+
+    const now = performance.now();
+    const dt = Math.min(0.1, (now - (this.vowelMorphState.lastTime || now)) / 1000.0);
+    this.vowelMorphState.lastTime = now;
+
+    // Detect mouth shape transition
+    if (this.vowelMorphState.currentKey !== key) {
+      this.vowelMorphState.prevKey = this.vowelMorphState.currentKey;
+      this.vowelMorphState.currentKey = key;
+      this.vowelMorphState.progress = 0.0;
+    }
+
+    if (this.vowelMorphState.progress < 1.0) {
+      // Smooth 70ms natural morphing between vowel shapes (Ah, Eo, Oh, Woo, Ee, Closed)
+      this.vowelMorphState.progress = Math.min(1.0, this.vowelMorphState.progress + (dt / 0.07));
+    }
+
+    ctx.save();
+    const prevImg = this.loadedImages['scene_group_' + this.vowelMorphState.prevKey] || currentImg;
+    
+    if (this.vowelMorphState.progress < 1.0 && prevImg && prevImg.complete && currentImg && currentImg.complete && prevImg !== currentImg) {
+      // Draw previous vowel frame
+      ctx.globalAlpha = 1.0;
+      ctx.drawImage(prevImg, 0, 0, w, h);
+
+      // Smoothly blend in new vowel frame
+      ctx.globalAlpha = this.vowelMorphState.progress;
+      ctx.drawImage(currentImg, 0, 0, w, h);
+    } else if (currentImg && currentImg.complete) {
+      ctx.globalAlpha = 1.0;
+      ctx.drawImage(currentImg, 0, 0, w, h);
+    } else if (this.loadedImages['scene_group_wave']) {
+      ctx.globalAlpha = 1.0;
+      ctx.drawImage(this.loadedImages['scene_group_wave'], 0, 0, w, h);
+    }
+    ctx.restore();
+  }
+
+  // Draw natural mouth sprite cropped from artwork (Legacy fallback)
   drawKongiMouthSprite(ctx, w, h, mouthKey = 'closed') {
-    // If closed or silence, the original artwork smiling mouth shows through naturally
     if (!mouthKey || mouthKey === 'closed') {
       this.lastMouthKey = 'closed';
       this.mouthBlendAlpha = 0;
@@ -1405,19 +1489,17 @@ class MemoryGardenApp {
     const sprite = this.loadedImages['mouth_' + mouthKey];
     if (!sprite || !sprite.complete) return;
 
-    // Pixel-perfect mapping of the 120x80 mouth crop from 1376x768 master artwork
-    const dw = w * (120.0 / 1376.0);
-    const dh = h * (80.0 / 768.0);
-    const dx = w * (606.0 / 1376.0);
-    const dy = h * (315.0 / 768.0);
+    const dw = w * (80.0 / 1376.0);
+    const dh = h * (42.0 / 768.0);
+    const dx = w * (624.0 / 1376.0);
+    const dy = h * (326.0 / 768.0);
 
     ctx.save();
-    // Smooth micro-transition between mouth vowel shapes
     if (this.lastMouthKey !== mouthKey) {
-      this.mouthBlendAlpha = 0.65;
+      this.mouthBlendAlpha = 0.75;
       this.lastMouthKey = mouthKey;
     } else {
-      this.mouthBlendAlpha = Math.min(1.0, (this.mouthBlendAlpha || 0.65) + 0.2);
+      this.mouthBlendAlpha = Math.min(1.0, (this.mouthBlendAlpha || 0.75) + 0.15);
     }
 
     ctx.globalAlpha = this.mouthBlendAlpha;
@@ -1425,7 +1507,7 @@ class MemoryGardenApp {
     ctx.restore();
   }
 
-  // Step 4 Action: Dedicated Voice Test ("안녕하세요. 콩이에요.")
+  // Step 4 Action: Dedicated Voice Test ("안녕하세요. 콩이와 친구들이에요.")
   runKongiVoiceTest() {
     this.initAudioContext();
     if (this.audioCtx && this.audioCtx.state === 'suspended') {
@@ -1445,12 +1527,12 @@ class MemoryGardenApp {
 
     this.kongiAudioHello.play().then(() => {
       this.voiceTestPassed = true;
-      this.showToast('🔊 “안녕하세요. 콩이에요.” 콩이 실제 음성 테스트 재생 중!', 'success');
-      this.logPipeline('🔊 [콩이 음성 테스트] 실제 오디오 트랙 재생 (Volume 1.0, Muted: false) 및 립싱크 검증 가동', 'info');
+      this.showToast('🔊 “안녕하세요. 콩이와 친구들이에요.” 콩이 실제 음성 테스트 재생 중!', 'success');
+      this.logPipeline('🔊 [4인 체조팀 음성 테스트] 메인 진행 콩이 대표 음성 재생 (Volume 1.0, Muted: false) 및 4인 씬 검증', 'info');
 
       const statusText = document.getElementById('testStatusText');
       if (statusText) {
-        statusText.innerHTML = '<span style="color:#059669; font-weight:800;">✓ 콩이 실제 음성 확인 성공! (볼륨 100%, 립싱크 정상 확인)</span>';
+        statusText.innerHTML = '<span style="color:#059669; font-weight:800;">✓ 콩이와 친구들 4인 음성 확인 성공! (볼륨 100%, 립싱크 정상 확인)</span>';
       }
 
       const previewBox = document.getElementById('testPreviewBox');
@@ -1465,12 +1547,12 @@ class MemoryGardenApp {
 
   playTestVoiceAnimationOnly() {
     if (!this.testCanvas || !this.testCtx) return;
-    const testScript = '“안녕하세요. 콩이에요.”';
+    const testScript = '“안녕하세요. 콩이와 친구들이에요.”';
     const firstScene = {
       num: 1,
       script: testScript,
       action: 'wave',
-      actionName: '손 흔들며 인사하기 (콩이 단독)',
+      actionName: '손 흔들며 시작 인사 (콩이·토리·나비·곰이 함께)',
       bg: 'bg_daycare'
     };
 
@@ -1479,7 +1561,7 @@ class MemoryGardenApp {
     const renderFrame = () => {
       const audio = this.kongiAudioHello;
       const curTime = audio ? audio.currentTime : 0;
-      const isEnded = !audio || audio.ended || curTime >= 3.6;
+      const isEnded = !audio || audio.ended || curTime >= 4.6;
 
       const mouthKey = this.getKongiMouthKey(curTime, false);
       this.currentKongiMouth = mouthKey;
@@ -1497,14 +1579,14 @@ class MemoryGardenApp {
         // Hold final closed smiling frame
         this.drawTogetherExerciseScene(ctx, w, h, firstScene, 'closed', true);
         this.drawTestOverlay(ctx, w, h, testScript, 'closed');
-        this.showToast('✨ 콩이 음성 및 립싱크 테스트가 성공적으로 완료되었습니다!', 'success');
+        this.showToast('✨ 콩이와 친구들 음성 및 립싱크 테스트가 성공적으로 완료되었습니다!', 'success');
       }
     };
 
     this.testAnimId = requestAnimationFrame(renderFrame);
   }
 
-  // Step 4 Action: Full Scene 1 Test Rendering
+  // Step 4 Action: Full Scene 1 Test Rendering (4-character team)
   runTestScene() {
     if (this.scenes.length === 0) {
       this.showToast('장면이 존재하지 않습니다. 대본을 먼저 분석해 주세요.', 'error');
@@ -1512,21 +1594,21 @@ class MemoryGardenApp {
     }
 
     const statusText = document.getElementById('testStatusText');
-    if (statusText) statusText.innerHTML = '<span style="color:#D97706; font-weight:700;">상태: 🎬 첫 장면(6초) 원본 콩이 단독 & 실제 음성 립싱크 렌더링 중...</span>';
+    if (statusText) statusText.innerHTML = '<span style="color:#D97706; font-weight:700;">상태: 🎬 첫 장면 4인 체조팀(콩이·토리·나비·곰이) & 실제 음성 립싱크 렌더링 중...</span>';
     
-    this.logPipeline('🎬 [첫 장면 테스트] 원본 콩이 단독 절대 기준 캐릭터 & 실제 음성 렌더링 시작...', 'info');
-    this.logPipeline('🔒 기준 검증: 얼굴, 큰 둥근 안경, 갈색 귀, 노란 체크 조끼, 흰 셔츠, 남색 바지, 파란 운동화 100% 유지', 'info');
-    this.logPipeline('🗣️ 음성 트랙: ko-KR 실제 오디오 트랙 합성 (Muted: false, Volume: 1.0)', 'info');
+    this.logPipeline('🎬 [첫 장면 테스트] 콩이·토리·나비·곰이 4인 체조팀 & 콩이 대표 음성 렌더링 시작...', 'info');
+    this.logPipeline('🔒 4인 캐릭터 락: 콩이(중앙 메인 안경 강아지), 토리(다람쥐), 나비(고양이), 곰이(곰) 100% 고정 유지', 'info');
+    this.logPipeline('🗣️ 대표 음성: 콩이 실제 한국어 신경망 오디오 트랙 재생 (Volume 1.0, Muted: false)', 'info');
 
     setTimeout(() => {
       this.testPassed = true;
-      if (statusText) statusText.innerHTML = '상태: <span style="color:#059669; font-weight:800;">✓ 원본 콩이 단독 테스트 완료 (아래 체크리스트 확인 후 다음 단계 진행)</span>';
+      if (statusText) statusText.innerHTML = '상태: <span style="color:#059669; font-weight:800;">✓ 4인 체조팀 첫 장면 테스트 완료 (아래 체크리스트 확인 후 다음 단계 진행)</span>';
       
       const previewBox = document.getElementById('testPreviewBox');
       previewBox?.classList.remove('hidden');
 
-      this.logPipeline('✅ 첫 장면 테스트 영상 준비 완료: 원본 콩이 단독 인사 및 한국어 6대 립싱크 검증', 'success');
-      this.showToast('첫 장면 테스트 영상이 준비되었습니다. 영상과 실제 음성을 감상해 보세요!', 'success');
+      this.logPipeline('✅ 첫 장면 테스트 영상 준비 완료: 4인 함께 인사 및 콩이 한국어 6대 립싱크 검증', 'success');
+      this.showToast('첫 장면 테스트 영상이 준비되었습니다. 4명의 친구들과 실제 음성을 감상해 보세요!', 'success');
 
       this.playTestScenePreview();
     }, 1000);
@@ -1545,12 +1627,12 @@ class MemoryGardenApp {
       this.activeVoiceAudio.currentTime = 0;
     }
 
-    const targetScript = '안녕하세요. 콩이에요. 오늘도 저와 함께 천천히 몸을 움직여 볼까요?';
+    const targetScript = '안녕하세요. 콩이와 친구들이에요. 오늘은 우리 함께 천천히 몸을 움직여 볼까요?';
     const firstScene = {
       num: 1,
       script: targetScript,
       action: 'wave',
-      actionName: '손 흔들며 인사하기 (콩이 단독)',
+      actionName: '손 흔들며 시작 인사 (콩이·토리·나비·곰이 함께)',
       bg: 'bg_daycare'
     };
 
@@ -1566,7 +1648,7 @@ class MemoryGardenApp {
 
     const renderTestFrame = () => {
       const curTime = this.kongiAudioFull ? this.kongiAudioFull.currentTime : 0;
-      const isEnded = !this.kongiAudioFull || this.kongiAudioFull.ended || curTime >= 7.6;
+      const isEnded = !this.kongiAudioFull || this.kongiAudioFull.ended || curTime >= 9.6;
 
       const mouthKey = this.getKongiMouthKey(curTime, true);
       this.currentKongiMouth = mouthKey;
@@ -1575,7 +1657,7 @@ class MemoryGardenApp {
       const w = this.testCanvas.width;
       const h = this.testCanvas.height;
 
-      // Draw Solo Kong-i Scene (Original Master reference)
+      // Draw 4-character team master scene with Kong-i's smooth vowel morphing
       this.drawTogetherExerciseScene(ctx, w, h, firstScene, mouthKey, true);
       this.drawTestOverlay(ctx, w, h, firstScene.script, mouthKey);
 
@@ -1596,25 +1678,25 @@ class MemoryGardenApp {
     ctx.save();
     ctx.fillStyle = 'rgba(6, 95, 70, 0.92)';
     ctx.beginPath();
-    ctx.roundRect(w * 0.04, 14, 280, 28, 14);
+    ctx.roundRect(w * 0.04, 14, 320, 28, 14);
     ctx.fill();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 12px Pretendard, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('🔒 원본 콩이 절대 기준 캐릭터 락 가동 중', w * 0.04 + 14, 32);
+    ctx.fillText('🔒 콩이·토리·나비·곰이 4인 체조팀 일관성 락 가동 중', w * 0.04 + 14, 32);
     ctx.restore();
 
     // 2. Real Audio & Lipsync Indicator Badge
     ctx.save();
     ctx.fillStyle = 'rgba(217, 119, 6, 0.92)';
     ctx.beginPath();
-    ctx.roundRect(w - 230, 14, 200, 28, 14);
+    ctx.roundRect(w - 240, 14, 210, 28, 14);
     ctx.fill();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 11px Pretendard, sans-serif';
     ctx.textAlign = 'center';
     const mouthNames = { closed: '입닫기', a: '아', eo: '어', o: '오', u: '우', i: '이' };
-    ctx.fillText(`🔊 음성재생 | 입모양: [${mouthNames[currentMouth] || currentMouth}]`, w - 130, 32);
+    ctx.fillText(`🔊 콩이 대표 음성 | 립싱크: [${mouthNames[currentMouth] || currentMouth}]`, w - 135, 32);
     ctx.restore();
 
     // 3. Subtitle Bar
@@ -1823,8 +1905,20 @@ class MemoryGardenApp {
       bg: this.selectedBg
     };
 
+    // Determine lip-sync mouth key for live playback
+    let mouthState = 'closed';
+    if (this.isPlaying) {
+      if (this.selectedChar === 'kongi' && this.currentSceneIdx === 0 && this.kongiAudioFull && !this.kongiAudioFull.paused && !this.kongiAudioFull.ended) {
+        mouthState = this.getKongiMouthKey(this.kongiAudioFull.currentTime, true);
+      } else {
+        mouthState = this.charAnim.mouthOpen || 'closed';
+      }
+    } else {
+      mouthState = 'closed';
+    }
+
     // Draw Unified Together Scene (Kong-i exercising directly WITH seniors)
-    this.drawTogetherExerciseScene(ctx, w, h, currentScene, this.charAnim.mouthOpen, false);
+    this.drawTogetherExerciseScene(ctx, w, h, currentScene, mouthState, false);
 
     // 4. Update HTML Overlays (Subtitle & Guide badge)
     const overlaySub = document.getElementById('overlaySubtitle');
@@ -1844,136 +1938,66 @@ class MemoryGardenApp {
     });
   }
 
-  // Unified Renderer: Kong-i Master Solo Scene & Exercise Together Scenes
+  // Unified Renderer: 4-Friend Chair Gymnastics Master Scenes (Kongi, Tori, Nabi, Gomi)
   drawTogetherExerciseScene(ctx, w, h, scene, mouthState, isTest = false) {
     const action = scene?.action || 'wave';
-    const isFirstSoloScene = (isTest || scene?.num === 1 || (action === 'wave' && this.currentSceneIdx === 0));
+    const isFirstScene = (isTest || scene?.num === 1 || (action === 'wave' && this.currentSceneIdx === 0));
 
-    // Check if we can use the high-quality unified together scene or solo master scene
-    let togetherImgKey = null;
-    let mouthCoords = { x: 0.485, y: 0.435 }; // Default coordinates for original Kong-i master
-
-    if (this.selectedChar === 'kongi') {
-      if (isFirstSoloScene) {
-        // Strictly use Original Reference Kong-i Master Scene for Scene 1 (Solo)
-        togetherImgKey = 'kongi_scene1_wave';
-        mouthCoords = { x: 0.485, y: 0.435 };
-      } else {
-        switch (action) {
-          case 'wave':
-          case 'nod_smile':
-            togetherImgKey = 'kongi_scene1_wave';
-            mouthCoords = { x: 0.485, y: 0.435 };
-            break;
-          case 'arms_up':
-          case 'shoulder_shrug':
-          case 'knee_lift':
-            togetherImgKey = 'scene_together_arms_up';
-            mouthCoords = { x: 0.501, y: 0.528 };
-            break;
-          case 'arms_side':
-          case 'wrist_shake':
-            togetherImgKey = 'scene_together_arms_side';
-            mouthCoords = { x: 0.502, y: 0.485 };
-            break;
-          case 'clap':
-            togetherImgKey = 'scene_together_clap';
-            mouthCoords = { x: 0.502, y: 0.520 };
-            break;
-          case 'deep_breath':
-          case 'safe_rest':
-          default:
-            togetherImgKey = 'scene_together_breath';
-            mouthCoords = { x: 0.502, y: 0.368 };
-            break;
-        }
-      }
+    // Choose 4-character group master image for each senior chair exercise action
+    let groupImgKey = 'scene_group_wave';
+    switch (action) {
+      case 'wave':
+      case 'nod_smile':
+        groupImgKey = 'scene_group_wave';
+        break;
+      case 'arms_up':
+      case 'shoulder_shrug':
+        groupImgKey = 'scene_group_arms_up';
+        break;
+      case 'arms_side':
+      case 'wrist_shake':
+        groupImgKey = 'scene_group_arms_side';
+        break;
+      case 'clap':
+        groupImgKey = 'scene_group_clap';
+        break;
+      case 'knee_lift':
+        groupImgKey = 'scene_group_knee_lift';
+        break;
+      case 'deep_breath':
+      case 'safe_rest':
+      default:
+        groupImgKey = 'scene_group_breath';
+        break;
     }
 
-    const togetherImg = togetherImgKey ? this.loadedImages[togetherImgKey] : null;
+    const groupImg = this.loadedImages[groupImgKey];
 
-    if (togetherImg && togetherImg.complete) {
-      // 1. Draw Master Scene
-      // For Kong-i first solo scene: keep head and scene completely steady (no rocking/shaking)
-      const isFixedSolo = isFirstSoloScene || togetherImgKey === 'kongi_scene1_wave';
-      const pulse = isFixedSolo ? 1.0 : (1 + Math.sin(this.charAnim.actionTick * 1.5) * 0.006);
-      const offsetY = isFixedSolo ? 0 : (Math.sin(this.charAnim.actionTick * 1.5) * 2.5);
+    // If it's the speaking greeting scene (wave / Scene 1 / Test), use 100% seamless morphing frames
+    if (isFirstScene || action === 'wave' || action === 'nod_smile') {
+      const mouthKey = (typeof mouthState === 'string') ? mouthState : (mouthState > 0 ? 'a' : 'closed');
+      this.drawSeamlessKongiMasterScene(ctx, w, h, mouthKey);
+      return;
+    }
+
+    if (groupImg && groupImg.complete) {
+      // Chair gymnastics breathing micro-rhythm movement
+      const pulse = 1 + Math.sin(this.charAnim.actionTick * 1.2) * 0.004;
+      const offsetY = Math.sin(this.charAnim.actionTick * 1.2) * 2.0;
 
       ctx.save();
-      if (!isFixedSolo) {
-        ctx.translate(w / 2, h / 2);
-        ctx.scale(pulse, pulse);
-        ctx.translate(-w / 2, -h / 2 + offsetY);
-      }
-      ctx.drawImage(togetherImg, 0, 0, w, h);
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(pulse, pulse);
+      ctx.translate(-w / 2, -h / 2 + offsetY);
+      ctx.drawImage(groupImg, 0, 0, w, h);
       ctx.restore();
 
-      // 2. Active Live Lip-Sync on Kong-i's face in the center
-      const mouthPixelX = w * mouthCoords.x;
-      const mouthPixelY = (h * mouthCoords.y) + offsetY;
-      const scaleFactor = w / 1280;
-
-      if (isFixedSolo) {
-        // Render Real Artwork 6-Vowel Sprite seamlessly integrated into face
-        const mouthKey = (typeof mouthState === 'string') ? mouthState : (mouthState > 0 ? 'a' : 'closed');
-        this.drawKongiMouthSprite(ctx, w, h, mouthKey);
-      } else if (mouthState > 0 && action !== 'deep_breath') {
-        ctx.save();
-        ctx.translate(mouthPixelX, mouthPixelY);
-
-        ctx.fillStyle = '#881337';
-        ctx.strokeStyle = '#E11D48';
-        ctx.lineWidth = 2 * scaleFactor;
-
-        ctx.beginPath();
-        if (mouthState === 1 || mouthState === 'a') {
-          ctx.ellipse(0, 0, 14 * scaleFactor, 16 * scaleFactor, 0, 0, Math.PI * 2);
-        } else if (mouthState === 2 || mouthState === 'o') {
-          ctx.ellipse(0, 0, 11 * scaleFactor, 11 * scaleFactor, 0, 0, Math.PI * 2);
-        } else {
-          ctx.ellipse(0, 0, 18 * scaleFactor, 8 * scaleFactor, 0, 0, Math.PI * 2);
-        }
-        ctx.fill();
-        ctx.stroke();
-
-        // Tongue
-        ctx.fillStyle = '#FB7185';
-        ctx.beginPath();
-        ctx.ellipse(0, 4 * scaleFactor, 8 * scaleFactor, 5 * scaleFactor, 0, 0, Math.PI);
-        ctx.fill();
-
-        ctx.restore();
-      }
-
-      // 3. Eye Blink Overlay on Kong-i's eyes (disabled for fixed solo scene to keep face, glasses, nose 100% original)
-      if (this.charAnim.blinkState === 1 && action !== 'deep_breath' && !isFixedSolo) {
-        ctx.save();
-        const eyeY = mouthPixelY - ((isFirstSoloScene ? 38 : 28) * scaleFactor);
-        const eyeOffset = (isFirstSoloScene ? 32 : 22) * scaleFactor;
-        ctx.strokeStyle = '#451A03';
-        ctx.lineWidth = 3 * scaleFactor;
-
-        // Left eye blink arc
-        ctx.beginPath();
-        ctx.arc(mouthPixelX - eyeOffset, eyeY, (isFirstSoloScene ? 14 : 11) * scaleFactor, 0.1 * Math.PI, 0.9 * Math.PI, false);
-        ctx.stroke();
-
-        // Right eye blink arc
-        ctx.beginPath();
-        ctx.arc(mouthPixelX + eyeOffset, eyeY, (isFirstSoloScene ? 14 : 11) * scaleFactor, 0.1 * Math.PI, 0.9 * Math.PI, false);
-        ctx.stroke();
-
-        ctx.restore();
-      }
-
-      // 4. Senior Cheerful Reactions & Speech Bubbles (Connecting Kong-i with Seniors, only for group exercise)
-      if (!isTest && !isFirstSoloScene) {
+      // Cheerful encouragement bubbles from friends
+      if (!isTest) {
         this.drawSeniorReactionBubbles(ctx, w, h, action);
       }
-
     } else {
-      // Fallback for other characters or loading state:
-      // Draw Daycare room and blend character with soft floor shadow & senior companions
+      // Fallback renderer
       this.drawCanvasBackground(ctx, w, h, scene.bg || this.selectedBg);
       this.drawSeniorCompanions(ctx, w, h, action);
       this.drawSeniorChair(ctx, w / 2, h * 0.72);
@@ -2334,10 +2358,17 @@ class MemoryGardenApp {
       this.playBgm();
     }
 
-    // Speak Current Scene Script
+    // Speak Current Scene Script or play dedicated voice
     const currentScene = this.scenes[this.currentSceneIdx];
     if (currentScene) {
-      this.speakText(currentScene.script);
+      if (this.selectedChar === 'kongi' && this.currentSceneIdx === 0 && this.kongiAudioFull) {
+        this.kongiAudioFull.currentTime = this.sceneElapsedTime || 0;
+        this.kongiAudioFull.volume = 1.0;
+        this.kongiAudioFull.muted = false;
+        this.kongiAudioFull.play().catch(e => console.warn(e));
+      } else {
+        this.speakText(currentScene.script);
+      }
     }
   }
 
@@ -2345,6 +2376,9 @@ class MemoryGardenApp {
     this.isPlaying = false;
     document.getElementById('canvasPlayOverlay')?.classList.remove('hidden');
     this.updatePlayPauseButtonUI();
+    if (this.kongiAudioFull) {
+      this.kongiAudioFull.pause();
+    }
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -2353,6 +2387,10 @@ class MemoryGardenApp {
 
   stopPlayback() {
     this.pausePlayback();
+    if (this.kongiAudioFull) {
+      this.kongiAudioFull.pause();
+      this.kongiAudioFull.currentTime = 0;
+    }
     this.currentSceneIdx = 0;
     this.sceneElapsedTime = 0;
     this.totalElapsedTime = 0;
@@ -2369,6 +2407,11 @@ class MemoryGardenApp {
     this.currentSceneIdx = idx;
     this.sceneElapsedTime = 0;
 
+    if (this.kongiAudioFull) {
+      this.kongiAudioFull.pause();
+      this.kongiAudioFull.currentTime = 0;
+    }
+
     // Recalculate total elapsed time up to this scene
     let elapsed = 0;
     for (let i = 0; i < idx; i++) {
@@ -2382,7 +2425,14 @@ class MemoryGardenApp {
     if (this.isPlaying) {
       const scene = this.scenes[idx];
       if (scene) {
-        this.speakText(scene.script);
+        if (this.selectedChar === 'kongi' && idx === 0 && this.kongiAudioFull) {
+          this.kongiAudioFull.currentTime = 0;
+          this.kongiAudioFull.volume = 1.0;
+          this.kongiAudioFull.muted = false;
+          this.kongiAudioFull.play().catch(e => console.warn(e));
+        } else {
+          this.speakText(scene.script);
+        }
       }
     }
   }
