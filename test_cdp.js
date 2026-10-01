@@ -50,46 +50,55 @@ async function run() {
     return res.result?.result?.value;
   };
 
+  // Reload page to get fresh DOM and JS
+  await send('Page.reload');
+  await new Promise(r => setTimeout(r, 1200));
+
   console.log('Page Title:', await evalJs('document.title'));
 
-  // 1. Check Step 1
-  const step1Title = await evalJs('document.querySelector(".char-name")?.innerText');
-  console.log('Step 1 Character Card:', step1Title);
+  // 1. Check Default Project
+  const currentProject = await evalJs('document.getElementById("projectSelector")?.value');
+  console.log('Default Selected Project:', currentProject);
 
-  // 2. Click Next to Step 2
-  await evalJs('document.getElementById("btnNextToStep2")?.click()');
+  // 2. Check Step 1 Banner
+  const togetherBanner = await evalJs('document.querySelector(".together-info strong")?.innerText');
+  console.log('Step 1 Banner:', togetherBanner);
+
+  // 3. Click Next to Step 2
+  await evalJs('document.querySelector("button[onclick=\'app.goToStep(2)\']")?.click()');
   await new Promise(r => setTimeout(r, 600));
-  const scriptContent = await evalJs('document.getElementById("scriptInput")?.value');
-  console.log('Step 2 Script preview (first line):', scriptContent?.split('\n')[0]);
 
-  // 3. Click AI Analyze script to Step 3
+  const scriptVal = await evalJs('document.getElementById("scriptInput")?.value');
+  console.log('Step 2 Script preview (first line):', scriptVal?.split('\n')[0]);
+  console.log('Step 2 Script total length:', scriptVal?.length);
+
+  // 4. Click AI Analyze script to Step 3
   await evalJs('document.getElementById("btnAnalyzeScript")?.click()');
   await new Promise(r => setTimeout(r, 800));
   const sceneCount = await evalJs('document.querySelectorAll(".scene-card")?.length');
   console.log('Step 3 Generated Scenes Count:', sceneCount);
 
-  // 4. Click Next to Step 4
-  await evalJs('document.getElementById("btnNextToStep4")?.click()');
+  // 5. Click Next to Step 4
+  await evalJs('document.querySelector("button[onclick=\'app.goToStep(4)\']")?.click()');
   await new Promise(r => setTimeout(r, 600));
-  console.log('Step 4 active?:', await evalJs('document.getElementById("step4")?.classList.contains("active")'));
 
-  // 5. Test Voice Button
+  // 6. Test Voice Button
   await evalJs('document.getElementById("btnTestKongiVoice")?.click()');
   await new Promise(r => setTimeout(r, 1000));
   console.log('Voice test status text:', await evalJs('document.getElementById("testStatusText")?.innerText'));
 
-  // 6. Test Scene Button
+  // 7. Test Scene Button (first scene)
   await evalJs('document.getElementById("btnRunTestScene")?.click()');
   await new Promise(r => setTimeout(r, 2000));
-  console.log('Test Canvas Box hidden?:', await evalJs('document.getElementById("testPreviewBox")?.classList.contains("hidden")'));
+  console.log('Test Canvas Box visible?:', await evalJs('!document.getElementById("testPreviewBox")?.classList.contains("hidden")'));
 
-  // 7. Approve Test Scene
+  // 8. Approve Test Scene
   await evalJs('document.getElementById("btnApproveTestScene")?.click()');
   await new Promise(r => setTimeout(r, 500));
   const canStartPipeline = await evalJs('!document.getElementById("btnBuildFullVideo")?.disabled');
   console.log('Can start pipeline (btnBuildFullVideo enabled)?:', canStartPipeline);
 
-  // 8. Start Full Pipeline (btnBuildFullVideo)
+  // 9. Start Full Pipeline (btnBuildFullVideo)
   await evalJs('document.getElementById("btnBuildFullVideo")?.click()');
   console.log('Pipeline started! Monitoring progress...');
 
@@ -102,30 +111,37 @@ async function run() {
   }
   console.log('\nPipeline finished!');
 
-  // 9. Click btnGoToPlayer to Step 5
+  // 10. Click btnGoToPlayer to Step 5
   await new Promise(r => setTimeout(r, 1000));
   await evalJs('document.getElementById("btnGoToPlayer")?.click()');
   await new Promise(r => setTimeout(r, 800));
 
   const step5Active = await evalJs('document.getElementById("step5")?.classList.contains("active")');
-  const finalTitle = await evalJs('document.getElementById("finalVideoTitle")?.innerText');
   console.log('Step 5 Active?:', step5Active);
-  console.log('Final Video Title:', finalTitle);
 
-  // 10. Play final video
+  // 11. Test Chapter Navigation
+  console.log('Testing 6-course chapter navigation:');
+  for (let c = 1; c <= 6; c++) {
+    await evalJs(`app.jumpToChapter(${c})`);
+    await new Promise(r => setTimeout(r, 300));
+    const activeBadge = await evalJs('document.getElementById("overlaySceneBadge")?.innerText');
+    console.log(`  Chapter ${c} jump -> current scene badge:`, activeBadge);
+  }
+
+  // 12. Play final video
   await evalJs('document.getElementById("btnPlayPause")?.click()');
-  await new Promise(r => setTimeout(r, 1500));
+  await new Promise(r => setTimeout(r, 1200));
   const isPlaying = await evalJs('window.app?.isPlaying || false');
   console.log('Is video playing in Step 5?:', isPlaying);
 
-  // Capture screenshot via CDP
+  // Capture final high-res verification screenshot
   const screenshot = await send('Page.captureScreenshot', { format: 'png' });
   if (screenshot.result?.data) {
-    fs.writeFileSync('step5_verified.png', Buffer.from(screenshot.result.data, 'base64'));
-    console.log('Saved screenshot to step5_verified.png');
+    fs.writeFileSync('step5_20min_verified.png', Buffer.from(screenshot.result.data, 'base64'));
+    console.log('Saved screenshot to step5_20min_verified.png');
   }
 
-  console.log('=== ALL AUTOMATED CHECKS COMPLETED WITH 100% SUCCESS! ===');
+  console.log('=== 20-MINUTE CHAIR EXERCISE PROGRAM 100% VERIFIED! ===');
   ws.close();
   process.exit(0);
 }

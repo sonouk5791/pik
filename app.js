@@ -68,6 +68,34 @@ const EXERCISE_ACTIONS = {
     desc: '말초 혈액순환을 돕는 손목 털기',
     safeRule: '과도한 반동 없이 털어주기'
   },
+  neck_tilt: {
+    id: 'neck_tilt',
+    name: '목 부드럽게 갸우뚱 풀기',
+    icon: '🙆',
+    desc: '의자에 앉아 고개를 천천히 좌우로 기울이며 목 이완',
+    safeRule: '빠른 목 회전 절대 금지, 어지럼증 없는 완만한 각도'
+  },
+  finger_wiggle: {
+    id: 'finger_wiggle',
+    name: '손가락 꼼지락 & 주먹 쥐고 펴기',
+    icon: '🖐️',
+    desc: '손가락을 꼼지락거리고 주먹을 쥐었다 펴며 뇌 자극',
+    safeRule: '말초 신경 순환, 부드러운 손동작'
+  },
+  ankle_flex: {
+    id: 'ankle_flex',
+    name: '발목 까딱까딱 순환 운동',
+    icon: '🦶',
+    desc: '의자를 잡고 발끝을 위로 까딱이며 혈액순환 촉진',
+    safeRule: '낙상 방지 의자 고정, 무리 없는 가동 범위'
+  },
+  stretch_side: {
+    id: 'stretch_side',
+    name: '한 팔 올려 옆구리 천천히 늘리기',
+    icon: '🧘',
+    desc: '한쪽 팔을 부드럽게 머리 위로 올려 옆구리 이완',
+    safeRule: '과도한 허리 비틀기 금지, 시원한 범위까지만'
+  },
   safe_rest: {
     id: 'safe_rest',
     name: '바른 자세로 잠시 호흡 고르기',
@@ -79,6 +107,35 @@ const EXERCISE_ACTIONS = {
 
 // Preset Projects Data
 const PRESETS = {
+  preset_senior_20min: {
+    name: '🌸 기억정원 20분 의자체조 (콩이 메인 & 친구들·어르신 4명)',
+    char: 'kongi',
+    duration: 1200, // 20분 (1200초)
+    bg: 'bg_daycare',
+    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.85, emotion: 'warm' },
+    bgm: 'spring_garden',
+    script: `어르신들, 안녕하세요! 기억정원 콩이와 친구들이에요.
+오늘도 건강하고 행복한 하루, 저와 함께 천천히 시작해 볼까요?
+무리하지 말고 천천히 따라하세요. 힘드시면 언제든 쉬어도 괜찮아요.
+의자 등받이에 편안하게 기대어 앉아, 두 손을 가슴에 살포시 올려놓으세요.
+코로 맑은 숨을 천천히 들이마시고...
+입으로 편안하게 후- 내쉬어 보세요.
+이번에는 굳어있던 목과 어깨를 부드럽게 풀어볼게요.
+고개를 오른쪽으로 천천히 갸우뚱~ 기울여 봅니다. 하나, 둘, 셋.
+이번엔 왼쪽으로 갸우뚱~ 기울여 봅니다.
+양어깨를 귀 가까이 으쓱~ 올렸다가 툭- 편안하게 내려놓으세요.
+이제 가슴을 활짝 펴고 양팔을 천천히 올려볼게요.
+시원하게 기지개를 켜듯 양팔을 하늘 위로 쭉 올려보세요.
+이번에는 양팔을 옆으로 활짝 벌려볼까요?
+신나고 즐거운 손뼉 치기 시간이에요! 손뼉을 짝! 짝! 짝짝짝!
+손가락도 꼼지락꼼지락, 주먹을 쥐었다가 쫙 펴보세요!
+안전하게 의자를 꼭 잡고, 무릎을 살짝 들어볼게요.
+오른쪽 무릎 살짝 들고, 이번엔 왼쪽 무릎을 살짝 들어보세요.
+발목도 까딱까딱 움직이며 혈액순환을 도와줍니다.
+마무리로 한쪽 팔을 머리 위로 올려 옆구리를 천천히 늘려줄게요.
+두 손을 모으고 깊게 숨을 들이마시고... 천천히 내쉽니다.
+어르신들, 오늘 20분 동안 정말 훌륭하게 잘하셨어요! 늘 건강하세요!`
+  },
   preset_kongi: {
     name: '기억정원 4인 의자체조 (콩이·토리·나비·곰이 함께 운동)',
     char: 'kongi',
@@ -240,7 +297,7 @@ class MemoryGardenApp {
     this.bindDOM();
     this.preloadAssets();
     this.initAudioContext();
-    this.loadProject('preset_kongi');
+    this.loadProject('preset_senior_20min');
     this.setupSpeechSynthesis();
   }
 
@@ -378,6 +435,9 @@ class MemoryGardenApp {
     document.getElementById('btnAnalyzeScript')?.addEventListener('click', () => this.analyzeScriptAndProceed());
 
     // Preset Script Chips
+    document.getElementById('btnPreset20Min')?.addEventListener('click', () => {
+      this.setScriptContent(PRESETS.preset_senior_20min.script);
+    });
     document.getElementById('btnPreset1')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_kongi.script);
     });
@@ -514,6 +574,14 @@ class MemoryGardenApp {
       mouth_o: 'assets/mouth_o.png',
       mouth_u: 'assets/mouth_u.png',
       mouth_i: 'assets/mouth_i.png',
+      // 20-Minute Senior Chair Exercise Master Scenes (Kong-i + Tori, Nabi, Bori + 4 Elders)
+      scene_20m_main_banner: 'assets/scene_20m_main_banner.jpg',
+      scene_20m_1_greeting: 'assets/scene_20m_1_greeting.jpg',
+      scene_20m_2_neck_shoulder: 'assets/scene_20m_2_neck_shoulder.jpg',
+      scene_20m_3_arms_up_side: 'assets/scene_20m_3_arms_up_side.jpg',
+      scene_20m_4_clap_hands: 'assets/scene_20m_4_clap_hands.jpg',
+      scene_20m_5_knee_ankle: 'assets/scene_20m_5_knee_ankle.jpg',
+      scene_20m_6_stretch_finish: 'assets/scene_20m_6_stretch_finish.jpg',
       // 4-Character Group Exercise Scenes (Kong-i, Tori, Nabi, Gomi)
       scene_group_wave: 'assets/scene_group_wave.jpg',
       scene_group_arms_up: 'assets/scene_group_arms_up.jpg',
@@ -1104,8 +1172,14 @@ class MemoryGardenApp {
   matchActionFromText(text) {
     const t = text.toLowerCase();
 
-    if (/안녕|반갑|시작|콩이|토리|나비|곰이|만나/.test(t)) {
+    if (/안녕|반갑|시작|콩이|토리|나비|보리|곰이|만나/.test(t)) {
       return 'wave';
+    }
+    if (/목|갸우뚱|기울여|좌우로/.test(t)) {
+      return 'neck_tilt';
+    }
+    if (/어깨|들썩|으쓱|승모근/.test(t)) {
+      return 'shoulder_shrug';
     }
     if (/팔.*올려|위로|기지개|하늘|쭉쭉|올려볼|올리고/.test(t)) {
       return 'arms_up';
@@ -1113,19 +1187,25 @@ class MemoryGardenApp {
     if (/옆으로|벌려|가슴|날개|활짝|펴볼|벌리고/.test(t)) {
       return 'arms_side';
     }
-    if (/어깨|들썩|으쓱|목|승모근/.test(t)) {
-      return 'shoulder_shrug';
+    if (/박수|손뼉|짝짝|신나게/.test(t)) {
+      return 'clap';
     }
-    if (/무릎|다리|발걸음|쿵쿵|하체|발목/.test(t)) {
+    if (/손가락|꼼지락|주먹|보자기|펴고|쥐고/.test(t)) {
+      return 'finger_wiggle';
+    }
+    if (/무릎|다리|발걸음|쿵쿵|하체/.test(t)) {
       return 'knee_lift';
+    }
+    if (/발목|발끝|까딱|순환/.test(t)) {
+      return 'ankle_flex';
+    }
+    if (/옆구리|늘려|스트레칭|마무리.*늘려/.test(t)) {
+      return 'stretch_side';
     }
     if (/숨|호흡|들이마|내쉬|후-|천천히.*숨/.test(t)) {
       return 'deep_breath';
     }
-    if (/박수|손뼉|짝짝|노래|신나게/.test(t)) {
-      return 'clap';
-    }
-    if (/잘하|수고|최고|웃|미소|대단|감사/.test(t)) {
+    if (/잘하|수고|최고|웃|미소|대단|감사|사랑/.test(t)) {
       return 'nod_smile';
     }
     if (/손목|털|탈탈|털어/.test(t)) {
@@ -1938,36 +2018,39 @@ class MemoryGardenApp {
     });
   }
 
-  // Unified Renderer: 4-Friend Chair Gymnastics Master Scenes (Kongi, Tori, Nabi, Gomi)
+  // Unified Renderer: 20-Minute Senior Chair Gymnastics & 4-Friend Master Scenes
   drawTogetherExerciseScene(ctx, w, h, scene, mouthState, isTest = false) {
     const action = scene?.action || 'wave';
     const isFirstScene = (isTest || scene?.num === 1 || (action === 'wave' && this.currentSceneIdx === 0));
 
-    // Choose 4-character group master image for each senior chair exercise action
-    let groupImgKey = 'scene_group_wave';
+    // Choose 20-minute 6-course master image or group exercise action
+    let groupImgKey = 'scene_20m_1_greeting';
     switch (action) {
       case 'wave':
       case 'nod_smile':
-        groupImgKey = 'scene_group_wave';
+        groupImgKey = this.loadedImages['scene_20m_1_greeting'] ? 'scene_20m_1_greeting' : 'scene_group_wave';
+        break;
+      case 'neck_tilt':
+      case 'shoulder_shrug':
+        groupImgKey = this.loadedImages['scene_20m_2_neck_shoulder'] ? 'scene_20m_2_neck_shoulder' : 'scene_group_arms_up';
         break;
       case 'arms_up':
-      case 'shoulder_shrug':
-        groupImgKey = 'scene_group_arms_up';
-        break;
       case 'arms_side':
-      case 'wrist_shake':
-        groupImgKey = 'scene_group_arms_side';
+        groupImgKey = this.loadedImages['scene_20m_3_arms_up_side'] ? 'scene_20m_3_arms_up_side' : 'scene_group_arms_side';
         break;
       case 'clap':
-        groupImgKey = 'scene_group_clap';
+      case 'finger_wiggle':
+        groupImgKey = this.loadedImages['scene_20m_4_clap_hands'] ? 'scene_20m_4_clap_hands' : 'scene_group_clap';
         break;
       case 'knee_lift':
-        groupImgKey = 'scene_group_knee_lift';
+      case 'ankle_flex':
+        groupImgKey = this.loadedImages['scene_20m_5_knee_ankle'] ? 'scene_20m_5_knee_ankle' : 'scene_group_knee_lift';
         break;
+      case 'stretch_side':
       case 'deep_breath':
       case 'safe_rest':
       default:
-        groupImgKey = 'scene_group_breath';
+        groupImgKey = this.loadedImages['scene_20m_6_stretch_finish'] ? 'scene_20m_6_stretch_finish' : 'scene_group_breath';
         break;
     }
 
@@ -1976,7 +2059,20 @@ class MemoryGardenApp {
     // If it's the speaking greeting scene (wave / Scene 1 / Test), use 100% seamless morphing frames
     if (isFirstScene || action === 'wave' || action === 'nod_smile') {
       const mouthKey = (typeof mouthState === 'string') ? mouthState : (mouthState > 0 ? 'a' : 'closed');
+      if (this.loadedImages['scene_20m_1_greeting'] && this.loadedImages['scene_20m_1_greeting'].complete) {
+        ctx.save();
+        const pulse = 1 + Math.sin(this.charAnim.actionTick * 1.2) * 0.003;
+        const offsetY = Math.sin(this.charAnim.actionTick * 1.2) * 1.5;
+        ctx.translate(w / 2, h / 2);
+        ctx.scale(pulse, pulse);
+        ctx.translate(-w / 2, -h / 2 + offsetY);
+        ctx.drawImage(this.loadedImages['scene_20m_1_greeting'], 0, 0, w, h);
+        ctx.restore();
+        this.drawSeniorSafetyNoticeBanner(ctx, w, h);
+        return;
+      }
       this.drawSeamlessKongiMasterScene(ctx, w, h, mouthKey);
+      this.drawSeniorSafetyNoticeBanner(ctx, w, h);
       return;
     }
 
@@ -1996,13 +2092,86 @@ class MemoryGardenApp {
       if (!isTest) {
         this.drawSeniorReactionBubbles(ctx, w, h, action);
       }
+      this.drawSeniorSafetyNoticeBanner(ctx, w, h);
     } else {
       // Fallback renderer
       this.drawCanvasBackground(ctx, w, h, scene.bg || this.selectedBg);
       this.drawSeniorCompanions(ctx, w, h, action);
       this.drawSeniorChair(ctx, w / 2, h * 0.72);
       this.drawMascotCharacter(ctx, w / 2, h * 0.62 + this.charAnim.breathOffset, 0.68, action, mouthState);
+      this.drawSeniorSafetyNoticeBanner(ctx, w, h);
     }
+  }
+
+  // Render Permanent High-Contrast Senior Safety Banner on Canvas
+  drawSeniorSafetyNoticeBanner(ctx, w, h) {
+    ctx.save();
+    // Safety Encouragement Banner above subtitle area
+    const bannerW = Math.min(680, w * 0.72);
+    const bannerH = 34;
+    const bannerX = (w - bannerW) / 2;
+    const bannerY = h - 90;
+
+    // Soft rounded background
+    ctx.fillStyle = 'rgba(254, 242, 242, 0.95)';
+    ctx.strokeStyle = '#FECACA';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 17);
+    ctx.fill();
+    ctx.stroke();
+
+    // High contrast red/burgundy comforting text
+    ctx.fillStyle = '#991B1B';
+    ctx.font = 'bold 13px Pretendard, "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('❤️ 무리하지 말고 천천히 따라하세요   |   ❤️ 힘드시면 언제든 쉬어도 괜찮아요', w / 2, bannerY + (bannerH / 2));
+    ctx.restore();
+  }
+
+  // Jump to 20-Minute Course Chapter (1 to 6)
+  jumpToChapter(chapterNum) {
+    const chapterMap = {
+      1: { action: 'wave', alt: 'breath' },
+      2: { action: 'neck_tilt', alt: 'shoulder_shrug' },
+      3: { action: 'arms_up', alt: 'arms_side' },
+      4: { action: 'clap', alt: 'finger_wiggle' },
+      5: { action: 'knee_lift', alt: 'ankle_flex' },
+      6: { action: 'stretch_side', alt: 'deep_breath' }
+    };
+
+    const target = chapterMap[chapterNum] || chapterMap[1];
+
+    // Find first scene matching this chapter action
+    let targetIdx = this.scenes.findIndex(s => s.action === target.action || s.action === target.alt);
+    if (targetIdx === -1) {
+      targetIdx = Math.min(this.scenes.length - 1, Math.floor(((chapterNum - 1) / 6) * this.scenes.length));
+    }
+
+    this.jumpScene(targetIdx);
+
+    // Update chapter button styling
+    for (let i = 1; i <= 6; i++) {
+      const btn = document.getElementById(`btnChap${i}`);
+      if (btn) {
+        const isActive = (i === chapterNum);
+        btn.classList.toggle('active', isActive);
+        btn.style.background = isActive ? '#059669' : '#E2E8F0';
+        btn.style.color = isActive ? '#fff' : '#334155';
+        btn.style.fontWeight = isActive ? '800' : '600';
+      }
+    }
+
+    const chapterTitles = {
+      1: '1코스: 인사와 준비호흡 (3분)',
+      2: '2코스: 목·어깨 풀기 (4분)',
+      3: '3코스: 양팔 올리기·벌리기 (4분)',
+      4: '4코스: 손뼉치기·손운동 (3분)',
+      5: '5코스: 무릎 들기·발목 운동 (4분)',
+      6: '6코스: 마무리 스트레칭 (2분)'
+    };
+    this.showToast(`⏱️ ${chapterTitles[chapterNum] || chapterNum + '코스'}로 이동했습니다.`, 'info');
   }
 
   // Draw Warm Encouragement Bubbles from Seniors
