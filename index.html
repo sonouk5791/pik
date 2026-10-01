@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기억정원 AI 영상 만들기 | 대본 기반 어르신 의자체조 영상 제작 스튜디오</title>
+  <meta name="description" content="사용자가 대본만 입력하면 자동으로 장면을 분석하고, 캐릭터 영상과 음성을 생성해 어르신 의자체조 영상을 완성하는 웹 기반 AI 영상 제작 플랫폼">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Global App Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <span class="brand-icon">🌸</span>
+        <div class="brand-texts">
+          <h1 class="brand-title">기억정원 AI 영상 만들기</h1>
+          <p class="brand-slogan">대본만 입력하면 완성되는 어르신 의자체조 AI 영상 스튜디오</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="safety-mode-badge" id="safetyModeBadge" title="어르신 의자체조 안전 규칙이 활성화되어 있습니다">
+        <span class="shield-icon">🛡️</span>
+        <div class="safety-text-group">
+          <span class="mode-label">어르신 의자체조 모드</span>
+          <span class="mode-status">안전 규칙 적용 중 (클릭 시 수칙 보기)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="project-manager">
+        <label for="projectSelector" class="sr-only">프로젝트 선택</label>
+        <select id="projectSelector" class="project-dropdown">
+          <option value="preset_kongi">📂 프로젝트: 콩이 5분 의자체조</option>
+          <option value="preset_tori">📂 프로젝트: 토리 10분 인지 건강체조</option>
+          <option value="preset_nabi">📂 프로젝트: 나비 유연성 스트레칭</option>
+          <option value="preset_gomi">📂 프로젝트: 곰이 바른자세 척추체조</option>
+          <option value="custom">📂 내 프로젝트 (새로 만들기)</option>
+        </select>
+        <button id="btnSaveProject" class="btn btn-secondary btn-sm" title="현재 프로젝트 저장">
+          <span>💾 저장</span>
+        </button>
+        <button id="btnExportJson" class="btn btn-secondary btn-sm" title="프로젝트 파일 내보내기">
+          <span>📤 백업</span>
+        </button>
+        <button id="btnImportJson" class="btn btn-secondary btn-sm" title="프로젝트 파일 불러오기">
+          <span>📥 불러오기</span>
+        </button>
+        <input type="file" id="fileImportProject" accept=".json" style="display: none;">
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation / Step Indicator -->
+  <nav class="step-nav" aria-label="제작 단계">
+    <div class="step-container">
+      <button class="step-tab active" data-step="1">
+        <span class="step-number">1</span>
+        <span class="step-label">캐릭터 & 설정</span>
+      </button>
+      <div class="step-connector"></div>
+      <button class="step-tab" data-step="2">
+        <span class="step-number">2</span>
+        <span class="step-label">대본 입력</span>
+      </button>
+      <div class="step-connector"></div>
+      <button class="step-tab" data-step="3">
+        <span class="step-number">3</span>
+        <span class="step-label">AI 장면 분석</span>
+      </button>
+      <div class="step-connector"></div>
+      <button class="step-tab" data-step="4">
+        <span class="step-number">4</span>
+        <span class="step-label">영상 제작 파이프라인</span>
+      </button>
+      <div class="step-connector"></div>
+      <button class="step-tab" data-step="5">
+        <span class="step-number">5</span>
+        <span class="step-label">미리보기 & 최종 완성</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Workspace Container -->
+  <main class="main-content">
+    
+    <!-- STEP 1: 캐릭터 & 기본 설정 -->
+    <section id="step1" class="step-panel active">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <span class="step-badge">STEP 1</span>
+          <h2>캐릭터와 기본 환경을 선택해 주세요</h2>
+        </div>
+        <p class="panel-desc">어르신에게 친근한 기억정원 대표 캐릭터와 목소리, 배경음악을 선택합니다.</p>
+      </div>
+
+      <!-- Character Consistency Guarantee Banner -->
+      <div class="consistency-guarantee-banner">
+        <div class="consistency-icon">🔒</div>
+        <div class="consistency-info">
+          <strong>외형 일관성 100% 보장 엔진 가동</strong>
+          <span>전체 영상에서 캐릭터의 얼굴, 눈, 귀, 머리, 의상, 색상, 체형이 장면마다 달라지지 않고 완벽히 동일하게 유지됩니다.</span>
+        </div>
+        <div class="consistency-tag">AI Identity Lock</div>
+      </div>
+
+      <!-- Together Exercise with Seniors Banner -->
+      <div class="together-mode-banner">
+        <div class="together-icon">👵🐕👴</div>
+        <div class="together-info">
+          <strong>어르신과 함께 어울리는 체조 모드 [100% 일체형 적용]</strong>
+          <span>콩이가 따로 놀지 않고 주간보호센터에서 어르신들과 둘러앉아 한마음으로 손 흔들기, 양팔 올리기, 박수치기를 함께 호흡하며 체조합니다.</span>
+        </div>
+        <div class="together-status-badge">어르신 일체형 ON</div>
+      </div>
+
+      <!-- Character Selection Grid -->
+      <div class="section-block">
+        <h3 class="section-title">1. 체조 코치 캐릭터 선택</h3>
+        <div class="character-grid" id="characterGrid">
+          <!-- 콩이 -->
+          <div class="character-card active" data-char="kongi">
+            <div class="card-radio-mark">✓</div>
+            <div class="char-thumb-wrap">
+              <img src="assets/char_kongi.jpg" alt="캐릭터 콩이" class="char-thumb" id="thumb-kongi">
+            </div>
+            <div class="char-details">
+              <div class="char-name">콩이 <span class="char-badge">인기 1위</span></div>
+              <p class="char-role">귀엽고 다정한 강아지 코치</p>
+              <div class="char-tags">
+                <span class="tag">#밝은미소</span>
+                <span class="tag">#친근함</span>
+                <span class="tag">#어르신선호</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 토리 -->
+          <div class="character-card" data-char="tori">
+            <div class="card-radio-mark">✓</div>
+            <div class="char-thumb-wrap">
+              <img src="assets/char_tori.jpg" alt="캐릭터 토리" class="char-thumb" id="thumb-tori">
+            </div>
+            <div class="char-details">
+              <div class="char-name">토리</div>
+              <p class="char-role">활기차고 씩씩한 다람쥐 코치</p>
+              <div class="char-tags">
+                <span class="tag">#활력충전</span>
+                <span class="tag">#리듬체조</span>
+                <span class="tag">#동작또렷</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 나비 -->
+          <div class="character-card" data-char="nabi">
+            <div class="card-radio-mark">✓</div>
+            <div class="char-thumb-wrap">
+              <img src="assets/char_nabi.jpg" alt="캐릭터 나비" class="char-thumb" id="thumb-nabi">
+            </div>
+            <div class="char-details">
+              <div class="char-name">나비</div>
+              <p class="char-role">포근하고 부드러운 고양이 코치</p>
+              <div class="char-tags">
+                <span class="tag">#차분함</span>
+                <span class="tag">#스트레칭</span>
+                <span class="tag">#관절이완</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 곰이 -->
+          <div class="character-card" data-char="gomi">
+            <div class="card-radio-mark">✓</div>
+            <div class="char-thumb-wrap">
+              <img src="assets/char_gomi.jpg" alt="캐릭터 곰이" class="char-thumb" id="thumb-gomi">
+            </div>
+            <div class="char-details">
+              <div class="char-name">곰이</div>
+              <p class="char-role">든든하고 안정적인 의자체조 곰</p>
+              <div class="char-tags">
+                <span class="tag">#바른자세</span>
+                <span class="tag">#안정감</span>
+                <span class="tag">#중심잡기</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 직접 이미지 업로드 -->
+          <div class="character-card upload-card" id="charUploadCard">
+            <div class="char-thumb-wrap upload-box">
+              <span class="upload-icon">📷</span>
+              <span class="upload-text">직접 캐릭터 업로드</span>
+              <img id="customCharPreview" class="char-thumb hidden" alt="사용자 정의 캐릭터">
+            </div>
+            <div class="char-details">
+              <div class="char-name">직접 이미지 등록</div>
+              <p class="char-role">센터 마스코트나 강사 사진을 업로드하면 외형을 고정해 제작합니다.</p>
+              <button class="btn btn-outline btn-xs" id="btnUploadCharTrigger">사진 선택 (JPG/PNG)</button>
+              <input type="file" id="charImageInput" accept="image/*" style="display:none;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Grid: Duration & Background & Voice & BGM -->
+      <div class="settings-two-col">
+        
+        <!-- Left: Target Duration & Senior Chair Safety Rules -->
+        <div class="settings-card">
+          <h3 class="section-title">2. 목표 영상 길이</h3>
+          <div class="duration-selector" id="durationSelector">
+            <button class="duration-btn" data-sec="30">
+              <span class="duration-time">30초</span>
+              <span class="duration-sub">짧은 맛보기</span>
+            </button>
+            <button class="duration-btn active" data-sec="60">
+              <span class="duration-time">1분</span>
+              <span class="duration-sub">기본 스트레칭</span>
+            </button>
+            <button class="duration-btn" data-sec="300">
+              <span class="duration-time">5분</span>
+              <span class="duration-sub">일일 데일리 체조</span>
+            </button>
+            <button class="duration-btn" data-sec="600">
+              <span class="duration-time">10분</span>
+              <span class="duration-sub">인지 복합 체조</span>
+            </button>
+            <button class="duration-btn" data-sec="1200">
+              <span class="duration-time">20분</span>
+              <span class="duration-sub">전신 활력 프로그램</span>
+            </button>
+          </div>
+
+          <div class="duration-smart-balance-info" id="durationBalanceNotice">
+            <span class="info-icon">💡</span>
+            <span id="durationNoticeText">대본 길이가 목표 시간보다 짧으면 AI가 어르신 안전 심호흡 및 반복 휴식 구간을 자동으로 추가합니다.</span>
+          </div>
+
+          <!-- Senior Safety Rules Box -->
+          <div class="safety-rules-box">
+            <div class="safety-header">
+              <span class="shield-mini">🛡️</span>
+              <h4>어르신 의자체조 필수 8대 안전 수칙</h4>
+            </div>
+            <div class="safety-badge-list">
+              <span class="rule-badge">🪑 의자 착석 상태 유지</span>
+              <span class="rule-badge danger">🚫 점프 동작 금지</span>
+              <span class="rule-badge danger">🚫 빠른 회전 금지</span>
+              <span class="rule-badge danger">🚫 과도한 허리 비틀기 금지</span>
+              <span class="rule-badge danger">🚫 빠른 목 돌리기 금지</span>
+              <span class="rule-badge danger">🚫 한 발 서기 금지</span>
+              <span class="rule-badge danger">🚫 무리한 다리 올리기 금지</span>
+              <span class="rule-badge success">🌿 천천히 반복 & 중간 휴식</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Background Selection -->
+        <div class="settings-card">
+          <h3 class="section-title">3. 기억정원 배경 선택</h3>
+          <div class="bg-selector-grid" id="bgSelectorGrid">
+            <div class="bg-option active" data-bg="bg_daycare">
+              <div class="bg-thumb" style="background-image: url('assets/bg_daycare.jpg')"></div>
+              <span class="bg-name">주간보호센터 운동실</span>
+            </div>
+            <div class="bg-option" data-bg="bg_garden">
+              <div class="bg-thumb" style="background-image: url('assets/bg_garden.jpg')"></div>
+              <span class="bg-name">기억정원 산책로</span>
+            </div>
+            <div class="bg-option" data-bg="bg_livingroom">
+              <div class="bg-thumb" style="background-image: url('assets/bg_livingroom.jpg')"></div>
+              <span class="bg-name">따뜻한 거실</span>
+            </div>
+            <div class="bg-option" data-bg="bg_lilac">
+              <div class="bg-thumb bg-gradient-lilac">
+                <span class="bg-emoji">🌸</span>
+              </div>
+              <span class="bg-name">라일락 마을</span>
+            </div>
+            <div class="bg-option" data-bg="bg_classroom">
+              <div class="bg-thumb bg-gradient-class">
+                <span class="bg-emoji">🏫</span>
+              </div>
+              <span class="bg-name">밝은 교실</span>
+            </div>
+            <div class="bg-option upload-bg" id="bgUploadOption">
+              <div class="bg-thumb upload-thumb">
+                <span>➕</span>
+              </div>
+              <span class="bg-name">직접 업로드</span>
+              <input type="file" id="bgImageInput" accept="image/*" style="display:none;">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Settings Grid: Voice & Lip-sync & BGM -->
+      <div class="settings-two-col">
+        
+        <!-- Voice & Lip-sync Settings -->
+        <div class="settings-card">
+          <div class="card-head-with-action">
+            <h3 class="section-title">4. 캐릭터 음성 & 립싱크</h3>
+            <button id="btnVoicePreview" class="btn btn-primary btn-sm">
+              <span class="icon">🔊</span>
+              <span>음성 미리듣기</span>
+            </button>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="voiceGender">목소리 유형</label>
+              <select id="voiceGender" class="form-select">
+                <option value="female_warm">여성 (따뜻하고 다정한 목소리 - 추천)</option>
+                <option value="male_gentle">남성 (차분하고 신뢰감 있는 목소리)</option>
+                <option value="grandma_friendly">포근한 할머니 선생님 목소리</option>
+                <option value="child_cute">친손주처럼 귀여운 목소리</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="voiceTone">말투 스타일</label>
+              <select id="voiceTone" class="form-select">
+                <option value="friendly">친근하고 다정한 경어체 (기본)</option>
+                <option value="clear">또렷하고 낭랑한 체조 지도체</option>
+                <option value="calm">차분하고 편안한 이완 명상체</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label for="voicePitch">음역 (높낮이): <span id="pitchVal">중간</span></label>
+              <input type="range" id="voicePitch" min="0.7" max="1.3" step="0.1" value="1.0" class="form-range">
+            </div>
+            <div class="form-group">
+              <label for="voiceSpeed">속도: <span id="speedVal">약간 느림 (0.9x)</span></label>
+              <input type="range" id="voiceSpeed" min="0.7" max="1.2" step="0.05" value="0.9" class="form-range">
+            </div>
+            <div class="form-group">
+              <label for="voiceEmotion">감정 강도</label>
+              <select id="voiceEmotion" class="form-select">
+                <option value="warm">온화함 (기본)</option>
+                <option value="cheerful">활기참</option>
+                <option value="encouraging">격려와 칭찬</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Lip-Sync Preview Indicator -->
+          <div class="lipsync-preview-box">
+            <div class="lipsync-visual">
+              <div class="mouth-shape" id="mouthPreviewShape"></div>
+            </div>
+            <div class="lipsync-info">
+              <strong>스마트 립싱크(Lip-Sync) 엔진 연동</strong>
+              <span>대사의 발음 모음(A, I, U, E, O)과 음성에 맞춰 캐릭터 입모양이 자연스럽고 생생하게 움직입니다.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Background Music (BGM) & Auto-Ducking -->
+        <div class="settings-card">
+          <div class="card-head-with-action">
+            <h3 class="section-title">5. 배경음악 (BGM)</h3>
+            <button id="btnToggleBgmPlay" class="btn btn-outline btn-sm">
+              <span id="bgmPlayIcon">▶</span>
+              <span id="bgmPlayLabel">음악 들어보기</span>
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label for="bgmSelect">배경음악 테마</label>
+            <select id="bgmSelect" class="form-select">
+              <option value="spring_garden">🌿 봄날의 기억정원 (평온하고 따뜻한 피아노)</option>
+              <option value="silver_rhythm">☀️ 경쾌한 실버 체조 (리드미컬 어르신 박자)</option>
+              <option value="lilac_walk">🌸 라일락 산책로 (평온한 자연 소리와 멜로디)</option>
+              <option value="none">🔇 배경음악 없음 (목소리만)</option>
+            </select>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="bgmVolume">음악 볼륨: <span id="bgmVolVal">30%</span></label>
+              <input type="range" id="bgmVolume" min="0" max="100" value="30" class="form-range">
+            </div>
+            <div class="form-group">
+              <label>직접 음악 업로드 (MP3 / WAV)</label>
+              <div class="file-upload-inline">
+                <label for="bgmFileInput" class="btn btn-outline btn-sm upload-trigger-btn">
+                  <span>📁 파일 선택</span>
+                </label>
+                <input type="file" id="bgmFileInput" accept=".mp3,.wav" style="display:none;">
+                <span id="bgmFileName" class="file-chosen-text">기본 힐링 음원 적용 중</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Auto-Ducking Info Box -->
+          <div class="auto-ducking-banner">
+            <span class="duck-icon">🎚️</span>
+            <div class="duck-text">
+              <strong>음성 감지 자동 덕킹(Auto-Ducking) 적용</strong>
+              <span>캐릭터가 대본을 말할 때는 배경음악 볼륨을 자동으로 70% 낮춰 어르신이 말씀 내용을 또렷하게 들으실 수 있습니다.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="panel-footer-actions">
+        <button class="btn btn-primary btn-lg" onclick="app.goToStep(2)">
+          <span>다음: 대본 입력하기 →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 2: 대본 입력창 -->
+    <section id="step2" class="step-panel">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <span class="step-badge">STEP 2</span>
+          <h2>영상 대본을 입력해 주세요</h2>
+        </div>
+        <p class="panel-desc">복잡한 편집 지식 없이, 어르신들에게 들려드릴 말씀이나 체조 구령을 자유롭게 입력해 주세요.</p>
+      </div>
+
+      <!-- Script Presets Quick Buttons -->
+      <div class="script-presets-bar">
+        <span class="presets-label">⚡ 추천 예시 대본:</span>
+        <button class="btn btn-chip" id="btnPreset1">🌟 기본 상체 체조 (예시)</button>
+        <button class="btn btn-chip" id="btnPreset2">🪑 어깨 & 목 이완 체조</button>
+        <button class="btn btn-chip" id="btnPreset3">🎶 인지 손뼉 & 무릎 체조</button>
+        <button class="btn btn-chip" id="btnPreset4">🌸 따뜻한 회상 & 심호흡</button>
+      </div>
+
+      <!-- Big Script Textarea Box -->
+      <div class="script-editor-card">
+        <div class="editor-header">
+          <span class="editor-title">📝 대본 입력창</span>
+          <div class="script-stats">
+            <span id="charCount">총 0자</span>
+            <span class="stat-divider">|</span>
+            <span id="estDuration">예상 소요 시간: 약 0초</span>
+            <span class="stat-divider">|</span>
+            <span id="estSceneCount">예상 장면: 0개</span>
+          </div>
+        </div>
+
+        <textarea 
+          id="scriptInput" 
+          class="script-textarea" 
+          rows="9" 
+          placeholder="이곳에 대본을 입력해 주세요. 줄바꿈이나 마침표를 기준으로 AI가 장면을 똑똑하게 나누어 드립니다.
+예시:
+안녕하세요. 콩이에요.
+오늘은 팔을 천천히 올려볼게요.
+하나, 둘.
+이번에는 양팔을 옆으로 벌려볼까요?
+아주 잘하셨어요."></textarea>
+
+        <div class="editor-footer">
+          <div class="script-tip">
+            <span>💡 <strong>작성 팁:</strong> "팔을 올려볼게요", "어깨를 들썩여요", "무릎을 들어요", "숨을 들이마셔요" 같은 단어를 넣으시면 AI가 동작을 100% 자동으로 찾아줍니다.</span>
+          </div>
+          <div class="editor-actions">
+            <button class="btn btn-secondary" id="btnClearScript">지우기</button>
+            <button class="btn btn-analyze btn-glow" id="btnAnalyzeScript">
+              <span class="sparkle">✨</span>
+              <span>AI 장면 분석하기</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-footer-actions space-between">
+        <button class="btn btn-outline" onclick="app.goToStep(1)">
+          <span>← 이전: 기본 설정</span>
+        </button>
+        <button class="btn btn-primary" onclick="app.analyzeScriptAndProceed()">
+          <span>AI 장면 분석 및 다음 단계 →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3: AI 장면 자동 분리 & 카드 보드 -->
+    <section id="step3" class="step-panel">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <span class="step-badge">STEP 3</span>
+          <h2>AI 장면 자동 분리 및 동작 매칭</h2>
+        </div>
+        <p class="panel-desc">대본의 의미와 어르신 안전 수칙을 분석하여 최적의 체조 동작과 장면 순서를 완성했습니다. 카드를 드래그하여 순서를 바꿀 수 있습니다.</p>
+      </div>
+
+      <!-- Scene Board Toolbar -->
+      <div class="scene-board-toolbar">
+        <div class="toolbar-left">
+          <span class="total-scenes-badge" id="sceneCountBadge">총 4개 장면</span>
+          <span class="total-duration-badge" id="totalDurationBadge">총 소요 시간: 32초</span>
+          <span class="safety-applied-badge">🛡️ 의자체조 안전규칙 검증 완료</span>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-secondary btn-sm" id="btnAddSafePause">
+            <span>🌿 안전 휴식/호흡 장면 추가</span>
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btnAddEmptyScene">
+            <span>➕ 새 장면 추가</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnReanalyze">
+            <span>🔄 대본 다시 분석</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Scene Cards Grid -->
+      <div class="scene-cards-container" id="sceneCardsContainer">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Scene Edit Modal -->
+      <div class="modal-backdrop hidden" id="sceneEditModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3 id="editModalTitle">장면 수정</h3>
+            <button class="btn-close" id="btnCloseEditModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="editSceneScript">대본 내용</label>
+              <textarea id="editSceneScript" class="form-textarea" rows="3"></textarea>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="editSceneAction">캐릭터 체조 동작</label>
+                <select id="editSceneAction" class="form-select">
+                  <option value="wave">👋 손 흔들며 인사하기</option>
+                  <option value="arms_up">🙆 양팔 위로 올리기 (기지개)</option>
+                  <option value="arms_side">👐 양팔 옆으로 벌리기 (가슴 펴기)</option>
+                  <option value="shoulder_shrug">🤷 어깨 올렸다 내리기</option>
+                  <option value="knee_lift">🦵 무릎 번갈아 들기 (의자 착석)</option>
+                  <option value="deep_breath">🌬️ 팔을 천천히 올리며 호흡하기</option>
+                  <option value="clap">👏 신나게 박수치기</option>
+                  <option value="nod_smile">😊 웃으며 고개 끄덕이기</option>
+                  <option value="wrist_shake">🖐️ 손목 발목 부드럽게 털기</option>
+                  <option value="safe_rest">🌿 바른 자세로 잠시 호흡 고르기</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="editSceneDuration">예상 시간 (초)</label>
+                <input type="number" id="editSceneDuration" class="form-input" min="3" max="60" value="8">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="editSceneBg">장면 배경</label>
+              <select id="editSceneBg" class="form-select">
+                <option value="bg_daycare">주간보호센터 운동실</option>
+                <option value="bg_garden">기억정원 산책로</option>
+                <option value="bg_livingroom">따뜻한 거실</option>
+                <option value="bg_lilac">라일락 마을</option>
+                <option value="bg_classroom">밝은 교실</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="btnCancelEdit">취소</button>
+            <button class="btn btn-primary" id="btnSaveEdit">저장하기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-footer-actions space-between">
+        <button class="btn btn-outline" onclick="app.goToStep(2)">
+          <span>← 이전: 대본 수정</span>
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="app.goToStep(4)">
+          <span>다음: 영상 제작하기 →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 4: 영상 제작 파이프라인 (테스트 영상 & 전체 렌더링 & 오류 처리) -->
+    <section id="step4" class="step-panel">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <span class="step-badge">STEP 4</span>
+          <h2>AI 영상 제작 파이프라인</h2>
+        </div>
+        <p class="panel-desc">전체 영상을 렌더링하기 전, 첫 장면(5~8초) 테스트 영상으로 캐릭터 모션과 립싱크를 사전 검증합니다.</p>
+      </div>
+
+      <!-- Test Video First Step Card -->
+      <div class="test-video-card" id="testVideoCard">
+        <div class="test-icon-badge">🎬</div>
+        <div class="test-info">
+          <h3>첫 장면 테스트 (5~8초 퀵 렌더링)</h3>
+          <p>첫 장면을 빠르게 생성하여 캐릭터의 얼굴 일관성, 목소리 싱크, 체조 동작이 정상 작동하는지 확인합니다. 테스트가 통과되면 전체 영상 제작이 활성화됩니다.</p>
+          <div class="test-status-text" id="testStatusText">상태: 테스트 대기 중</div>
+        </div>
+        <div class="test-actions">
+          <button class="btn btn-secondary btn-lg" id="btnRunTestScene">
+            <span>🎬 첫 장면 테스트</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Test Video Quick Preview Modal or Area -->
+      <div class="test-preview-box hidden" id="testPreviewBox">
+        <div class="test-preview-header">
+          <span class="tag tag-success">✓ 첫 장면 테스트 성공</span>
+          <span class="test-preview-title">첫 장면 미리보기 (립싱크 및 모션 검증 완료)</span>
+          <button class="btn btn-outline btn-xs" id="btnCloseTestBox">닫기</button>
+        </div>
+        <div class="test-preview-canvas-wrap">
+          <canvas id="testCanvas" width="640" height="360"></canvas>
+          <div class="test-preview-controls">
+            <button class="btn btn-primary btn-sm" id="btnPlayTestCanvas">▶ 테스트 재생</button>
+            <span class="test-note">캐릭터 외형 락, 립싱크 타이밍, 체조 동작이 정상 검증되었습니다.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full Video Pipeline Progress Card -->
+      <div class="pipeline-progress-card">
+        <div class="pipeline-head">
+          <div class="pipeline-title-group">
+            <h3>전체 영상 렌더링 파이프라인</h3>
+            <span class="pipeline-status-badge" id="pipelineStatusBadge">준비 중</span>
+          </div>
+          <div class="pipeline-stats-group">
+            <span id="pipelineProgressCount">0 / 0 장면 완료</span>
+            <span class="progress-percent" id="pipelineProgressPercent">0%</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-track">
+          <div class="progress-fill" id="pipelineProgressBar" style="width: 0%;"></div>
+        </div>
+
+        <!-- Live Terminal Log -->
+        <div class="pipeline-log-box" id="pipelineLogBox">
+          <div class="log-line info">🌸 기억정원 AI 영상 렌더링 시스템 대기 중...</div>
+          <div class="log-line info">💡 [첫 장면 테스트]를 진행하시거나, 아래 [전체 영상 만들기] 버튼을 눌러주세요.</div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="pipeline-actions">
+          <button class="btn btn-primary btn-xl btn-glow" id="btnBuildFullVideo" disabled>
+            <span class="sparkle">🚀</span>
+            <span>전체 영상 만들기</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnSimulateError" title="개별 오류 처리 기능 테스트용">
+            <span>⚙️ 장면 오류 시뮬레이션 토글</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Scene Generation Status Table -->
+      <div class="pipeline-scenes-table-wrap">
+        <h4 class="table-title">장면별 생성 상태 모니터링</h4>
+        <div class="scene-status-grid" id="pipelineSceneGrid">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <div class="panel-footer-actions space-between">
+        <button class="btn btn-outline" onclick="app.goToStep(3)">
+          <span>← 이전: 장면 수정</span>
+        </button>
+        <button class="btn btn-primary" id="btnGoToPlayer" onclick="app.goToStep(5)" disabled>
+          <span>완성된 영상 보러 가기 (미리보기) →</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 5: 미리보기 플레이어 & 최종 영상 만들기 -->
+    <section id="step5" class="step-panel">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <span class="step-badge">STEP 5</span>
+          <h2>완성 영상 미리보기 & 최종 내보내기</h2>
+        </div>
+        <p class="panel-desc">16:9 고화질 극장 모드에서 캐릭터 체조 동작, 음성, 립싱크, 자막, 배경음악을 감상하고 최종 영상 파일로 다운로드합니다.</p>
+      </div>
+
+      <div class="player-layout">
+        
+        <!-- Video Player Display (16:9 1920x1080 Aspect Ratio) -->
+        <div class="player-main-col">
+          <div class="video-cinema-frame">
+            <canvas id="mainVideoCanvas" width="1280" height="720"></canvas>
+            
+            <!-- Video Overlay Info (Top) -->
+            <div class="video-overlay-top">
+              <div class="overlay-brand">
+                <span>🌸 기억정원 어르신 의자체조</span>
+              </div>
+              <div class="overlay-scene-badge" id="overlaySceneBadge">
+                장면 1/4 : 손 흔들며 인사하기
+              </div>
+            </div>
+
+            <!-- Video Overlay Subtitle (Bottom) -->
+            <div class="video-overlay-bottom">
+              <div class="subtitle-box" id="overlaySubtitle">
+                안녕하세요. 콩이에요.
+              </div>
+              <div class="rhythm-pulse-dots" id="rhythmDots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+            </div>
+
+            <!-- Play Overlay Button if paused -->
+            <div class="canvas-play-overlay hidden" id="canvasPlayOverlay">
+              <button class="big-play-btn" id="btnBigPlay">▶</button>
+            </div>
+          </div>
+
+          <!-- Video Controller Bar -->
+          <div class="video-controls-bar">
+            <!-- Timeline Seek Bar -->
+            <div class="timeline-seek-wrap">
+              <input type="range" id="videoSeekBar" min="0" max="100" value="0" class="seek-slider">
+              <div class="timeline-time-info">
+                <span id="currentTimeLabel">00:00</span>
+                <span>/</span>
+                <span id="totalTimeLabel">00:32</span>
+              </div>
+            </div>
+
+            <div class="controls-button-row">
+              <div class="ctrl-left">
+                <button class="ctrl-btn" id="btnPrevScene" title="이전 장면 (◀)">⏮</button>
+                <button class="ctrl-btn btn-play-main" id="btnPlayPause" title="재생/일시정지 (스페이스바)">▶</button>
+                <button class="ctrl-btn" id="btnNextScene" title="다음 장면 (▶)">⏭</button>
+                <button class="ctrl-btn" id="btnStop" title="정지">⏹</button>
+                
+                <div class="volume-ctrl-wrap">
+                  <span class="vol-icon" id="volIcon">🔊</span>
+                  <input type="range" id="masterVolume" min="0" max="100" value="80" class="vol-slider">
+                </div>
+              </div>
+
+              <div class="ctrl-center">
+                <span class="current-action-display" id="currentActionDisplay">
+                  동작: 손 흔들며 인사하기 (안전 의자 체조)
+                </span>
+              </div>
+
+              <div class="ctrl-right">
+                <button class="btn btn-outline btn-xs" id="btnToggleFullscreen">⛶ 전체화면</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Final Export & Scene Navigation List -->
+        <div class="player-side-col">
+          
+          <!-- Final Video Export Card -->
+          <div class="export-card">
+            <h3 class="export-title">🎬 최종 영상 만들기</h3>
+            <p class="export-desc">캐릭터 영상, 음성 립싱크, 자막, 배경음악을 완전히 합성한 고화질 비디오를 생성합니다.</p>
+            
+            <div class="export-specs">
+              <div class="spec-row">
+                <span class="spec-k">화면 비율</span>
+                <span class="spec-v">16:9 (와이드)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-k">해상도</span>
+                <span class="spec-v">1920 × 1080 (FHD)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-k">안전 모드</span>
+                <span class="spec-v text-emerald">의자체조 수칙 100% 적용</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-k">오디오 믹싱</span>
+                <span class="spec-v">보이스 + BGM 자동 덕킹</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-xl btn-block btn-glow" id="btnDownloadFinalVideo">
+              <span>📥 최종 영상 다운로드 (MP4/WebM)</span>
+            </button>
+
+            <div class="sub-export-actions">
+              <button class="btn btn-secondary btn-sm" id="btnDownloadSubtitles">
+                <span>📄 자막 파일 (SRT)</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btnDownloadScriptDoc">
+                <span>📋 체조 대본 (TXT)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scene Quick Jump List -->
+          <div class="scene-jump-list-card">
+            <h4>장면 바로가기</h4>
+            <div class="jump-list-container" id="jumpListContainer">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="panel-footer-actions space-between">
+        <button class="btn btn-outline" onclick="app.goToStep(4)">
+          <span>← 이전: 영상 제작 파이프라인</span>
+        </button>
+        <button class="btn btn-secondary" onclick="app.goToStep(1)">
+          <span>🌸 새 프로젝트 만들기</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Senior Chair Safety Rules Info Modal -->
+  <div class="modal-backdrop hidden" id="safetyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🛡️ 기억정원 어르신 의자체조 안전 규칙 안내</h3>
+        <button class="btn-close" id="btnCloseSafetyModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro">
+          기억정원은 복지관, 주간보호센터 및 가정에서 어르신들이 안전하게 운동하실 수 있도록
+          <strong>"어르신 의자체조 모드"</strong>를 기본 적용합니다.
+        </p>
+
+        <ul class="safety-rule-list">
+          <li><strong>1. 의자에 앉은 상태:</strong> 낙상 위험을 완전히 배제하고 등받이가 있는 의자에서 안정적으로 수행합니다.</li>
+          <li><strong>2. 점프 금지:</strong> 관절 및 무릎에 충격을 주는 점프나 반동 동작을 일체 배제합니다.</li>
+          <li><strong>3. 빠른 회전 금지:</strong> 어지럼증이나 혈압 변동을 방지하기 위해 급격한 몸통 회전을 제한합니다.</li>
+          <li><strong>4. 과도한 허리 비틀기 금지:</strong> 척추 디스크 및 늑골 보호를 위해 허리는 부드러운 가동 범위만 사용합니다.</li>
+          <li><strong>5. 빠른 목 돌리기 금지:</strong> 경추 신경 및 혈류 안정을 위해 목은 천천히 가볍게 스트레칭합니다.</li>
+          <li><strong>6. 한 발 서기 금지:</strong> 균형 상실 위험 동작을 배제합니다.</li>
+          <li><strong>7. 무리한 다리 올리기 금지:</strong> 고관절 무리 방지를 위해 무릎은 45도 내외로 안전하게 듭니다.</li>
+          <li><strong>8. 천천히 반복 & 중간 휴식:</strong> 모든 구령은 0.85~0.9배속의 완만한 템포와 심호흡 안내를 동반합니다.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnConfirmSafetyModal">확인했습니다</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
