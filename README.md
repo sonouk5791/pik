@@ -90,8 +90,8 @@ pik/
 Node.js 환경에서 별도의 외부 패키지 설치 없이 즉시 실행할 수 있습니다:
 
 ```bash
-# 로컬 서버 실행
-node server.js
+# 로컬 개발 서버 실행
+node dev-server.js
 
 # 브라우저 접속
 http://127.0.0.1:3000
@@ -99,16 +99,9 @@ http://127.0.0.1:3000
 
 ---
 
-## 🚀 배포 가이드 (Vercel & GitHub)
-
-### Vercel 배포
-현재 배포된 라이브 사이트:
-- [https://temporary-flying-quartz-z5qlfiq.vercel.app](https://temporary-flying-quartz-z5qlfiq.vercel.app)
-
-추가 배포 시:
-```bash
-vercel deploy --yes
-```
+## 🚀 배포 정보 및 GitHub 리포지토리
+- **GitHub 공식 저장소**: https://github.com/sonouk5791/pik
+- **Vercel 프로덕션 라이브 URL**: https://pik-woad.vercel.app/
 
 ### 라이브 배포 및 리포지토리
 - **GitHub 저장소**: https://github.com/sonouk5791/pik
