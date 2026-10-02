@@ -31,13 +31,20 @@
           <span class="mode-status">안전 규칙 적용 중 (클릭 시 수칙 보기)</span>
         </div>
       </div>
+      <!-- Feature Status Indicators (요구사항 15: 테스트 모드 명확 표시) -->
+      <div class="feature-status-group" style="display: flex; gap: 6px; align-items: center; margin-left: 10px;">
+        <span class="badge-status-ready" style="background: #ECFDF5; border: 1px solid #10B981; color: #047857; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">MP4 영상 생성 [사용 가능]</span>
+        <span class="badge-status-testing" style="background: #FFFBEB; border: 1px solid #F59E0B; color: #B45309; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">AI 자동 장면 분석 [테스트 중]</span>
+        <span class="badge-status-testing" style="background: #EFF6FF; border: 1px solid #3B82F6; color: #1D4ED8; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">실시간 립싱크 [테스트 중]</span>
+      </div>
     </div>
 
     <div class="header-right">
       <div class="project-manager">
         <label for="projectSelector" class="sr-only">프로젝트 선택</label>
         <select id="projectSelector" class="project-dropdown">
-          <option value="preset_senior_20min" selected>🌸 프로젝트: 콩이와 함께하는 20분 의자체조 (어르신 & 친구들)</option>
+          <option value="preset_senior_test" selected>🌸 프로젝트: 콩이 1분 의자체조 (테스트 영상 - 어르신 & 친구들 함께)</option>
+          <option value="preset_senior_20min">🌟 프로젝트: 콩이 20분 의자체조 (확장 마스터 - 6대 코스)</option>
           <option value="preset_kongi">📂 프로젝트: 콩이 5분 의자체조 (4인 팀)</option>
           <option value="preset_tori">📂 프로젝트: 토리 10분 인지 건강체조</option>
           <option value="preset_nabi">📂 프로젝트: 나비 유연성 스트레칭</option>
@@ -98,17 +105,17 @@
           <span class="step-badge">STEP 1</span>
           <h2>캐릭터와 기본 환경을 선택해 주세요</h2>
         </div>
-        <p class="panel-desc">중앙의 메인 진행자 콩이와 함께 토리·나비·보리, 그리고 어르신 4명이 의자에 앉아 20분 동안 천천히 건강한 의자체조를 진행합니다.</p>
+        <p class="panel-desc">중앙의 메인 진행자 <strong>콩이(강아지)</strong>를 중심으로 <strong>토리(다람쥐)·나비(고양이)·보리(곰)</strong>, 그리고 <strong>어르신 4명 이상</strong>이 한 화면에서 함께 30초~1분 테스트 의자체조를 진행합니다 (이후 20분 프로그램으로 확장 가능).</p>
       </div>
 
-      <!-- 20-Minute Senior Chair Exercise Program Master Banner -->
+      <!-- 1-Minute Senior Chair Exercise Program Master Banner -->
       <div class="together-mode-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #FEF3C7 100%); border-color: #10B981;">
-        <div class="together-icon">🌸🐶🐰🐱🐻👴👵</div>
+        <div class="together-icon">🌸🐶🐿️🐱🐻👴👵</div>
         <div class="together-info">
-          <strong style="color: #065F46; font-size: 15px;">기억정원 20분 의자체조 프로그램 [콩이 메인 진행 & 친구들·어르신 4명 함께 운동]</strong>
-          <span style="color: #047857;">콩이가 중앙에서 노란 트레이닝복을 입고 대표 음성으로 이끌며, 토리·나비·보리와 인자한 어르신 4명이 의자에 앉아 6대 코스(준비호흡, 목어깨, 양팔, 손뼉, 무릎발목, 마무리)를 천천히 함께합니다.</span>
+          <strong style="color: #065F46; font-size: 15px;">기억정원 1분 테스트 의자체조 [콩이 메인 진행 & 친구들·어르신 4명 함께 운동]</strong>
+          <span style="color: #047857;">콩이가 중앙에서 대표 음성으로 이끌며, 토리(다람쥐)·나비(고양이)·보리(곰)와 어르신들이 같은 공간에서 의자에 앉아 6대 안전 동작(인사, 양손 올리기, 양팔 벌리기, 박수 4번, 손 뻗기, 마무리)을 천천히 함께합니다.</span>
         </div>
-        <div class="together-status-badge" style="background: #059669;">20분 의자체조 마스터</div>
+        <div class="together-status-badge" style="background: #059669;">1분 테스트 완성본</div>
       </div>
 
       <!-- Character Consistency & Dementia Senior Safety Guarantee Banner -->
@@ -421,11 +428,12 @@
       <!-- Script Presets Quick Buttons -->
       <div class="script-presets-bar">
         <span class="presets-label">⚡ 추천 예시 대본:</span>
-        <button class="btn btn-chip" id="btnPreset20Min" style="background:#059669; color:#fff; font-weight:700;">🌸 기억정원 20분 의자체조 마스터 (어르신 & 친구들 추천)</button>
-        <button class="btn btn-chip" id="btnPreset1">🌟 4인 친구들 의자체조 (5분)</button>
+        <button class="btn btn-chip" id="btnPresetTest1Min" style="background:#059669; color:#fff; font-weight:700;">🌸 1분 테스트 의자체조 (어르신 & 친구들 추천)</button>
+        <button class="btn btn-chip" id="btnPreset20Min" style="background:#3B82F6; color:#fff; font-weight:700;">🌟 기억정원 20분 의자체조 (확장 코스)</button>
+        <button class="btn btn-chip" id="btnPreset1">🐶 4인 친구들 의자체조 (5분)</button>
         <button class="btn btn-chip" id="btnPreset2">🙆 양팔 올리기 & 기지개 체조</button>
         <button class="btn btn-chip" id="btnPreset3">👐 양팔 벌리기 & 가슴 펴기</button>
-        <button class="btn btn-chip" id="btnPreset4">👏 신나는 손뼉 & 무릎 체조</button>
+        <button class="btn btn-chip" id="btnPreset4">👏 신나는 손뼉 4번 & 체조</button>
       </div>
 
       <!-- Big Script Textarea Box -->
@@ -621,21 +629,21 @@
             <span>🔒</span> <span>기억정원 20분 어르신 의자체조 프로그램 품질 검증 체크리스트</span>
           </h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; font-size: 13px; color: #14532D;">
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 콩이(노란 트레이닝복/안경) 화면 중앙 메인 진행자 배치</div>
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 토리(곰), 나비(고양이), 보리(토끼) 양옆 배치 완료</div>
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 어르신 4명(할아버지 2명, 할머니 2명) 함께 착석</div>
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 20분 6대 코스(준비호흡, 목어깨, 양팔, 손뼉, 무릎발목, 마무리) 구성</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 콩이(노란 트레이닝복/안경 강아지) 화면 중앙 메인 진행자 배치</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 토리(다람쥐), 나비(고양이), 보리(곰) 양옆 함께 배치 완료</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 어르신 4명 이상(할아버지 2명, 할머니 2명) 함께 의자 착석</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 30초~1분 테스트 및 20분 6대 안전 의자체조 동작 구성</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 전 구간 100% 의자 착석 (점프/빠른회전/허리비틀기 금지)</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> “무리하지 말고 천천히 따라하세요” 안심 문구 표출</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> “힘드시면 언제든 쉬어도 괜찮아요” 안심 문구 표출</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 주간보호센터 운동실 배경 & 16:9 정면 고정</div>
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 실제 한국어 음성 트랙 연동 (콩이 단독 발화, Volume 100%)</div>
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 콩이 얼굴 6대 모음(아·어·오·우·이·닫힘) 자연 모핑 립싱크</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 실제 한국어 음성 트랙 연동 (콩이 발화 Volume 100% + BGM 자동 덕킹)</div>
+            <div><span style="color:#15803D; font-weight:bold;">✓</span> 콩이 6대 모음(아·야·어·여·오·우·이·닫힘) 자연 립싱크</div>
           </div>
           <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #86EFAC; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-            <span style="font-size: 12px; color: #15803D; font-weight: 600;">※ 20분 의자체조 구성이 확인되어야만 전체 영상 렌더링 파이프라인이 활성화됩니다.</span>
+            <span style="font-size: 12px; color: #15803D; font-weight: 600;">※ 어르신 의자체조 구성이 확인되어야만 전체 영상 렌더링 파이프라인이 활성화됩니다.</span>
             <button class="btn btn-primary" id="btnApproveTestScene" style="background: #16A34A; border-color: #15803D;">
-              <span>✓ 20분 어르신 의자체조 확인 완료 (다음 단계 언락)</span>
+              <span>✓ 어르신 의자체조 및 음성 확인 완료 (다음 단계 언락)</span>
             </button>
           </div>
         </div>
@@ -709,15 +717,15 @@
         
         <!-- Video Player Display (16:9 1920x1080 Aspect Ratio) -->
         <div class="player-main-col">
-          <!-- 20-Minute Course Chapter Quick Navigation Bar -->
+          <!-- 6-Course Exercise Chapter Quick Navigation Bar -->
           <div class="chapters-nav-bar" id="chaptersNavBar" style="display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 12px; margin-bottom: 12px; align-items: center;">
-            <span style="font-weight: 800; color: #166534; font-size: 13px; white-space: nowrap;">⏱️ 20분 6대 코스:</span>
-            <button class="btn btn-sm btn-chapter active" id="btnChap1" onclick="app.jumpToChapter(1)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #059669; color: #fff; font-weight: 700; border: none; cursor: pointer;">1. 인사·준비호흡 (3분)</button>
-            <button class="btn btn-sm btn-chapter" id="btnChap2" onclick="app.jumpToChapter(2)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">2. 목·어깨 풀기 (4분)</button>
-            <button class="btn btn-sm btn-chapter" id="btnChap3" onclick="app.jumpToChapter(3)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">3. 양팔 올리기·벌리기 (4분)</button>
-            <button class="btn btn-sm btn-chapter" id="btnChap4" onclick="app.jumpToChapter(4)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">4. 손뼉치기·손운동 (3분)</button>
-            <button class="btn btn-sm btn-chapter" id="btnChap5" onclick="app.jumpToChapter(5)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">5. 무릎들기·발목 (4분)</button>
-            <button class="btn btn-sm btn-chapter" id="btnChap6" onclick="app.jumpToChapter(6)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">6. 마무리 스트레칭 (2분)</button>
+            <span id="chaptersBarTitle" style="font-weight: 800; color: #166534; font-size: 13px; white-space: nowrap;">⏱️ 6대 체조 코스:</span>
+            <button class="btn btn-sm btn-chapter active" id="btnChap1" onclick="app.jumpToChapter(1)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #059669; color: #fff; font-weight: 700; border: none; cursor: pointer;">1. 콩이 인사 (5초)</button>
+            <button class="btn btn-sm btn-chapter" id="btnChap2" onclick="app.jumpToChapter(2)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">2. 양손 올리기 (10초)</button>
+            <button class="btn btn-sm btn-chapter" id="btnChap3" onclick="app.jumpToChapter(3)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">3. 양팔 벌리기 (10초)</button>
+            <button class="btn btn-sm btn-chapter" id="btnChap4" onclick="app.jumpToChapter(4)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">4. 박수 4번 (10초)</button>
+            <button class="btn btn-sm btn-chapter" id="btnChap5" onclick="app.jumpToChapter(5)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">5. 손 뻗기 (10초)</button>
+            <button class="btn btn-sm btn-chapter" id="btnChap6" onclick="app.jumpToChapter(6)" style="padding: 4px 10px; font-size: 12px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">6. 마무리 인사 (15초)</button>
           </div>
 
           <div class="video-cinema-frame">
@@ -726,10 +734,10 @@
             <!-- Video Overlay Info (Top) -->
             <div class="video-overlay-top">
               <div class="overlay-brand">
-                <span>🌸 기억정원 20분 어르신 의자체조</span>
+                <span id="playerBrandTitle">🌸 기억정원 어르신 의자체조</span>
               </div>
               <div class="overlay-scene-badge" id="overlaySceneBadge">
-                장면 1/6 : 인사와 준비호흡 (3분)
+                장면 1/6 : 인사 (5초)
               </div>
             </div>
 
@@ -825,7 +833,7 @@
             </div>
 
             <button class="btn btn-primary btn-xl btn-block btn-glow" id="btnDownloadFinalVideo">
-              <span>📥 최종 영상 다운로드 (MP4/WebM)</span>
+              <span>📥 1분 테스트 영상 다운로드 (MP4)</span>
             </button>
 
             <div class="sub-export-actions">

@@ -2132,3 +2132,90 @@ body {
   min-height: 80px;
   box-sizing: border-box;
 }
+
+/* ==========================================================================
+   Mobile & Tablet Responsive System (요구사항 16 & 17: iPad, 태블릿, 스마트폰)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .player-layout {
+    grid-template-columns: 1fr;
+  }
+  .settings-two-col {
+    grid-template-columns: 1fr;
+  }
+  .character-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .app-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-center {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 14px 10px;
+  }
+  .character-grid {
+    grid-template-columns: 1fr;
+  }
+  .step-container {
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .step-tab {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .script-presets-bar {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+  }
+  .btn-chip {
+    white-space: nowrap;
+  }
+  .video-cinema-frame {
+    border-radius: 8px;
+  }
+  .video-cinema-frame canvas {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+  }
+  .controls-button-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ctrl-left, .ctrl-center, .ctrl-right {
+    width: 100%;
+    justify-content: center;
+  }
+  /* Senior Friendly Large Touch Targets */
+  .btn-lg, .btn-xl {
+    min-height: 52px;
+    font-size: 1.05rem;
+  }
+  .big-play-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 2.2rem;
+  }
+}
+
+/* Senior Accessibility High-Contrast & Focus Styling */
+.senior-safety-live-banner strong {
+  font-size: 1.05rem;
+}
+
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #10B981 !important;
+  outline-offset: 2px !important;
+}
+

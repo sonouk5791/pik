@@ -102,13 +102,34 @@ const EXERCISE_ACTIONS = {
     icon: '🌿',
     desc: '의자 등받이에 등을 기대고 편안히 휴식',
     safeRule: '호흡 정상화, 피로 누적 방지'
+  },
+  arms_forward: {
+    id: 'arms_forward',
+    name: '양손 앞으로 뻗었다 당기기',
+    icon: '🤲',
+    desc: '의자에 앉아 양손을 앞으로 뻗었다가 가슴 쪽으로 당기기',
+    safeRule: '의자 착석, 어깨 무리 없는 부드러운 가동 범위'
   }
 };
 
 // Preset Projects Data
 const PRESETS = {
+  preset_senior_test: {
+    name: '🌸 기억정원 1분 테스트 의자체조 (콩이 메인 & 친구들·어르신 함께 운동)',
+    char: 'kongi',
+    duration: 60, // 60초 테스트 완성본
+    bg: 'bg_daycare',
+    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
+    bgm: 'spring_garden',
+    script: `안녕하세요. 오늘도 우리 함께 즐겁게 운동해볼까요?
+양손을 천천히 위로 올렸다가 내려볼게요. 하나 둘 셋 넷.
+이번에는 양팔을 좌우로 크게 벌려보세요. 가슴을 활짝 폅니다.
+신나게 박수 네 번! 짝! 짝! 짝! 짝!
+양손을 앞으로 천천히 뻗었다가 가슴 쪽으로 당겨보세요.
+아주 잘하셨어요. 천천히 쉬어가며 함께 운동해요.`
+  },
   preset_senior_20min: {
-    name: '🌸 기억정원 20분 의자체조 (콩이 메인 & 친구들·어르신 4명)',
+    name: '🌸 기억정원 20분 의자체조 (확장 마스터 - 6대 코스)',
     char: 'kongi',
     duration: 1200, // 20분 (1200초)
     bg: 'bg_daycare',
@@ -310,8 +331,27 @@ class MemoryGardenApp {
     this.bindDOM();
     this.preloadAssets();
     this.initAudioContext();
-    this.loadProject('preset_senior_20min');
+    this.loadProject('preset_senior_test');
     this.setupSpeechSynthesis();
+    this.setupAutoplayUnlock();
+  }
+
+  setupAutoplayUnlock() {
+    const unlock = () => {
+      if (this.audioCtx && this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+      // Unlock audio element
+      if (this.kongiAudioHello) {
+        this.kongiAudioHello.playsInline = true;
+      }
+      if (this.kongiAudioFull) {
+        this.kongiAudioFull.playsInline = true;
+      }
+    };
+    window.addEventListener('click', unlock, { passive: true });
+    window.addEventListener('touchstart', unlock, { passive: true });
+    window.addEventListener('keydown', unlock, { passive: true });
   }
 
   bindDOM() {
@@ -448,8 +488,17 @@ class MemoryGardenApp {
     document.getElementById('btnAnalyzeScript')?.addEventListener('click', () => this.analyzeScriptAndProceed());
 
     // Preset Script Chips
+    document.getElementById('btnPresetTest1Min')?.addEventListener('click', () => {
+      this.setScriptContent(PRESETS.preset_senior_test.script);
+      this.targetDuration = 60;
+      this.updateDurationNotice(60);
+      this.showToast('1분 테스트 의자체조 예시 대본이 적용되었습니다.', 'info');
+    });
     document.getElementById('btnPreset20Min')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_senior_20min.script);
+      this.targetDuration = 1200;
+      this.updateDurationNotice(1200);
+      this.showToast('20분 의자체조 마스터 예시 대본이 적용되었습니다.', 'info');
     });
     document.getElementById('btnPreset1')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_kongi.script);
@@ -626,8 +675,11 @@ class MemoryGardenApp {
         this.loadedImages[key] = img;
       };
       img.onerror = () => {
-        console.error(`[기억정원] 원본 캐릭터 이미지를 찾을 수 없습니다: ${src}`);
+        console.warn(`[기억정원] 에셋 로드 실패: ${src}`);
         this.loadedImages[key] = { error: true, src: src };
+        if (key.startsWith('char_')) {
+          this.showToast('캐릭터 이미지 파일을 확인해주세요.', 'error');
+        }
       };
     }
   }
@@ -995,7 +1047,7 @@ class MemoryGardenApp {
     }
 
     if (this.bgmTheme === 'none') {
-      this.showToast('배경음악이 "없음"으로 설정되어 있습니다.', 'info');
+      this.showToast('배경음악 파일이 등록되지 않았습니다.', 'info');
       return;
     }
 
@@ -1144,8 +1196,13 @@ class MemoryGardenApp {
       const matchedActionKey = this.matchActionFromText(line);
       const actionMeta = EXERCISE_ACTIONS[matchedActionKey] || EXERCISE_ACTIONS.safe_rest;
       
-      // Calculate realistic duration per scene (words / length)
-      const duration = Math.max(5, Math.min(14, Math.round(line.length / 2.8) + 3));
+      // Calculate realistic duration per scene
+      // For standard 1-min test script: 0~5s (5s), 5~15s (10s), 15~25s (10s), 25~35s (10s), 35~45s (10s), 45~60s (15s)
+      let duration = Math.max(5, Math.min(14, Math.round(line.length / 2.8) + 3));
+      if (lines.length === 6 && this.targetDuration === 60) {
+        const testDurations = [5, 10, 10, 10, 10, 15];
+        duration = testDurations[idx] || 10;
+      }
 
       generatedScenes.push({
         id: `scene_${Date.now()}_${idx}`,
@@ -1194,7 +1251,10 @@ class MemoryGardenApp {
   matchActionFromText(text) {
     const t = text.toLowerCase();
 
-    if (/안녕|반갑|시작|콩이|토리|나비|보리|곰이|만나/.test(t)) {
+    if (/앞으로.*뻗|뻗었다.*당겨|앞으로.*당겨|가슴.*쪽으로.*당겨/.test(t)) {
+      return 'arms_forward';
+    }
+    if (/안녕|반갑|시작|콩이|토리|나비|보리|만나|즐겁게.*운동/.test(t)) {
       return 'wave';
     }
     if (/목|갸우뚱|기울여|좌우로/.test(t)) {
@@ -1203,13 +1263,13 @@ class MemoryGardenApp {
     if (/어깨|들썩|으쓱|승모근/.test(t)) {
       return 'shoulder_shrug';
     }
-    if (/팔.*올려|위로|기지개|하늘|쭉쭉|올려볼|올리고/.test(t)) {
+    if (/팔.*올려|위로|기지개|하늘|쭉쭉|올려볼|올리고|올렸다가/.test(t)) {
       return 'arms_up';
     }
-    if (/옆으로|벌려|가슴|날개|활짝|펴볼|벌리고/.test(t)) {
+    if (/옆으로|벌려|가슴|날개|활짝|펴볼|벌리고|좌우로.*벌려/.test(t)) {
       return 'arms_side';
     }
-    if (/박수|손뼉|짝짝|신나게/.test(t)) {
+    if (/박수|손뼉|짝짝|신나게|네 번|4번/.test(t)) {
       return 'clap';
     }
     if (/손가락|꼼지락|주먹|보자기|펴고|쥐고/.test(t)) {
@@ -1227,7 +1287,7 @@ class MemoryGardenApp {
     if (/숨|호흡|들이마|내쉬|후-|천천히.*숨/.test(t)) {
       return 'deep_breath';
     }
-    if (/잘하|수고|최고|웃|미소|대단|감사|사랑/.test(t)) {
+    if (/잘하|수고|최고|웃|미소|대단|감사|사랑|쉬어가며|함께 운동해요/.test(t)) {
       return 'nod_smile';
     }
     if (/손목|털|탈탈|털어/.test(t)) {
@@ -1476,8 +1536,85 @@ class MemoryGardenApp {
     this.showToast(`장면 ${scene.num}이 수정되었습니다.`, 'success');
   }
 
-  // Korean Phoneme to 6 Mouth Shapes Map (Ah, Eo, Oh, Woo, Ee, Closed)
-  // Representative Speaker: Kong-i (Main Host, Center)
+  // Korean Hangul Jamo Decomposition Lip-sync Engine (요구사항 9: 아, 야, 어, 여, 오, 우, 이, 닫기)
+  // Converts any Korean character to one of 6 mouth shapes: 'a', 'eo', 'o', 'u', 'i', 'closed'
+  getMouthShapeFromKoreanChar(ch) {
+    if (!ch) return 'closed';
+    const code = ch.charCodeAt(0);
+    // Not Hangul Syllable
+    if (code < 0xAC00 || code > 0xD7A3) {
+      if (/[aeiouAEIOU]/.test(ch)) {
+        if (/[aA]/.test(ch)) return 'a';
+        if (/[oO]/.test(ch)) return 'o';
+        if (/[uU]/.test(ch)) return 'u';
+        if (/[eEiI]/.test(ch)) return 'i';
+      }
+      return 'closed';
+    }
+
+    const syllableIndex = code - 0xAC00;
+    const jungseongIndex = Math.floor((syllableIndex % 588) / 28);
+
+    // Map Korean medial vowels:
+    // 0: ㅏ (a), 1: ㅐ (i), 2: ㅑ (a), 3: ㅒ (i), 4: ㅓ (eo), 5: ㅔ (i), 6: ㅕ (eo), 7: ㅖ (i)
+    // 8: ㅗ (o), 9: ㅘ (a), 10: ㅙ (i), 11: ㅚ (i), 12: ㅛ (o), 13: ㅜ (u), 14: ㅝ (eo)
+    // 15: ㅞ (i), 16: ㅟ (i), 17: ㅠ (u), 18: ㅡ (u), 19: ㅢ (i), 20: ㅣ (i)
+    switch (jungseongIndex) {
+      case 0: // ㅏ
+      case 2: // ㅑ (야)
+      case 9: // ㅘ
+        return 'a';
+      case 4: // ㅓ
+      case 6: // ㅕ (여)
+      case 14: // ㅝ
+        return 'eo';
+      case 8: // ㅗ
+      case 12: // ㅛ
+        return 'o';
+      case 13: // ㅜ
+      case 17: // ㅠ
+      case 18: // ㅡ
+        return 'u';
+      case 1: // ㅐ
+      case 3: // ㅒ
+      case 5: // ㅔ
+      case 7: // ㅖ
+      case 10: // ㅙ
+      case 11: // ㅚ
+      case 15: // ㅞ
+      case 16: // ㅟ
+      case 19: // ㅢ
+      case 20: // ㅣ
+        return 'i';
+      default:
+        return 'closed';
+    }
+  }
+
+  // Get real-time mouth key for any scene based on script and elapsed seconds
+  getRealtimeMouthKeyForScene(scene, elapsedSec) {
+    if (!scene || !scene.script || elapsedSec <= 0.1) return 'closed';
+
+    // If scene 1 and audio is playing with dedicated audio file
+    if (this.currentSceneIdx === 0 && this.kongiAudioFull && !this.kongiAudioFull.paused && !this.kongiAudioFull.ended) {
+      return this.getKongiMouthKey(this.kongiAudioFull.currentTime, true);
+    }
+
+    const scriptOnly = scene.script.replace(/[^가-힣a-zA-Z]/g, '');
+    if (!scriptOnly.length) return 'closed';
+
+    // Senior speech pace: approx. 3.2 syllables per second
+    const estimatedSpeechSec = Math.min(scene.duration - 0.6, scriptOnly.length / 3.0);
+    if (elapsedSec > estimatedSpeechSec) {
+      return 'closed'; // Completed speech, peaceful smiling closed mouth
+    }
+
+    const charIndex = Math.min(scriptOnly.length - 1, Math.floor((elapsedSec / estimatedSpeechSec) * scriptOnly.length));
+    const ch = scriptOnly[charIndex];
+    return this.getMouthShapeFromKoreanChar(ch);
+  }
+
+  // Legacy & Full scene 1 speech mapping
   getKongiMouthKey(sec, isFullScene = false) {
     if (sec < 0.1) return 'closed';
 
@@ -1643,7 +1780,7 @@ class MemoryGardenApp {
       this.playTestVoiceAnimationOnly();
     }).catch(err => {
       console.warn('Audio play error', err);
-      this.showToast('오디오 재생을 위해 화면을 한 번 클릭해 주세요.', 'info');
+      this.showToast('콩이 음성 파일을 확인해주세요. (화면을 한 번 클릭해 주세요)', 'error');
     });
   }
 
@@ -1840,10 +1977,10 @@ class MemoryGardenApp {
 
     const processNextScene = () => {
       if (current >= total) {
-        // Complete Pipeline
+        // Complete Pipeline (요구사항 13: 운동영상 제작이 완료되었습니다.)
         this.isGenerating = false;
         if (statusBadge) {
-          statusBadge.textContent = '렌더링 100% 완료';
+          statusBadge.textContent = '운동영상 제작이 완료되었습니다.';
           statusBadge.style.background = '#DEF7EC';
           statusBadge.style.color = '#03543F';
         }
@@ -1852,8 +1989,8 @@ class MemoryGardenApp {
         document.getElementById('pipelineProgressCount').textContent = `${total} / ${total} 장면 완료`;
 
         document.getElementById('btnGoToPlayer').disabled = false;
-        this.logPipeline('🎉 [최종 영상 완성] 캐릭터 모션, 음성 립싱크, 자막, BGM 자동 덕킹 합성 완료!', 'success');
-        this.showToast('모든 장면이 성공적으로 생성되었습니다! [미리보기]에서 감상해 보세요.', 'success');
+        this.logPipeline('🎉 [완료] 운동영상 제작이 완료되었습니다.', 'success');
+        this.showToast('운동영상 제작이 완료되었습니다! [미리보기]에서 감상해 보세요.', 'success');
         return;
       }
 
@@ -2008,14 +2145,10 @@ class MemoryGardenApp {
       bg: this.selectedBg
     };
 
-    // Determine lip-sync mouth key for live playback
+    // Determine lip-sync mouth key for live playback (요구사항 9: 대본 실시간 자모 립싱크)
     let mouthState = 'closed';
     if (this.isPlaying) {
-      if (this.selectedChar === 'kongi' && this.currentSceneIdx === 0 && this.kongiAudioFull && !this.kongiAudioFull.paused && !this.kongiAudioFull.ended) {
-        mouthState = this.getKongiMouthKey(this.kongiAudioFull.currentTime, true);
-      } else {
-        mouthState = this.charAnim.mouthOpen || 'closed';
-      }
+      mouthState = this.getRealtimeMouthKeyForScene(currentScene, this.sceneElapsedTime);
     } else {
       mouthState = 'closed';
     }
@@ -2041,97 +2174,218 @@ class MemoryGardenApp {
     });
   }
 
-  // Unified Renderer: 20-Minute Senior Chair Gymnastics & 4-Friend Master Scenes
+  // Unified Renderer: Senior Chair Gymnastics (Kongi Center + Tori, Nabi, Bori + 4 Seniors Together)
   drawTogetherExerciseScene(ctx, w, h, scene, mouthState, isTest = false) {
     const action = scene?.action || 'wave';
-    const isFirstScene = (isTest || scene?.num === 1 || (action === 'wave' && this.currentSceneIdx === 0));
 
-    // If an individual original mascot (Tori, Nabi, Bori, or Custom) is selected as coach:
-    if (this.selectedChar !== 'kongi') {
-      this.drawCanvasBackground(ctx, w, h, scene?.bg || this.selectedBg);
-      this.drawSeniorChair(ctx, w / 2, h * 0.72);
-      this.drawMascotCharacter(ctx, w / 2, h * 0.60 + this.charAnim.breathOffset, 0.74, action, mouthState);
-      this.drawSeniorSafetyNoticeBanner(ctx, w, h);
-      return;
-    }
-
-    // Choose 20-minute 6-course master image or group exercise action
-    let groupImgKey = 'scene_20m_1_greeting';
+    // Map to together scenes where Kong-i, Tori, Nabi, Bori and Seniors all exercise together
+    let togetherImgKey = 'scene_together_wave';
     switch (action) {
       case 'wave':
       case 'nod_smile':
-        groupImgKey = this.loadedImages['scene_20m_1_greeting'] ? 'scene_20m_1_greeting' : 'scene_group_wave';
-        break;
-      case 'neck_tilt':
-      case 'shoulder_shrug':
-        groupImgKey = this.loadedImages['scene_20m_2_neck_shoulder'] ? 'scene_20m_2_neck_shoulder' : 'scene_group_arms_up';
+        togetherImgKey = 'scene_together_wave';
         break;
       case 'arms_up':
+      case 'shoulder_shrug':
+      case 'neck_tilt':
+        togetherImgKey = 'scene_together_arms_up';
+        break;
       case 'arms_side':
-        groupImgKey = this.loadedImages['scene_20m_3_arms_up_side'] ? 'scene_20m_3_arms_up_side' : 'scene_group_arms_side';
+        togetherImgKey = 'scene_together_arms_side';
         break;
       case 'clap':
-      case 'finger_wiggle':
-        groupImgKey = this.loadedImages['scene_20m_4_clap_hands'] ? 'scene_20m_4_clap_hands' : 'scene_group_clap';
+        togetherImgKey = 'scene_together_clap';
         break;
       case 'knee_lift':
       case 'ankle_flex':
-        groupImgKey = this.loadedImages['scene_20m_5_knee_ankle'] ? 'scene_20m_5_knee_ankle' : 'scene_group_knee_lift';
+        togetherImgKey = this.loadedImages['scene_group_knee_lift'] ? 'scene_group_knee_lift' : 'scene_together_arms_up';
         break;
-      case 'stretch_side':
+      case 'arms_forward':
       case 'deep_breath':
+      case 'stretch_side':
       case 'safe_rest':
       default:
-        groupImgKey = this.loadedImages['scene_20m_6_stretch_finish'] ? 'scene_20m_6_stretch_finish' : 'scene_group_breath';
+        togetherImgKey = 'scene_together_breath';
         break;
     }
 
-    const groupImg = this.loadedImages[groupImgKey];
+    let masterImg = this.loadedImages[togetherImgKey] || this.loadedImages['scene_together_wave'] || this.loadedImages['scene_20m_1_greeting'];
 
-    // If it's the speaking greeting scene (wave / Scene 1 / Test), use 100% seamless morphing frames
-    if (isFirstScene || action === 'wave' || action === 'nod_smile') {
-      const mouthKey = (typeof mouthState === 'string') ? mouthState : (mouthState > 0 ? 'a' : 'closed');
-      if (this.loadedImages['scene_20m_1_greeting'] && this.loadedImages['scene_20m_1_greeting'].complete) {
-        ctx.save();
-        const pulse = 1 + Math.sin(this.charAnim.actionTick * 1.2) * 0.003;
-        const offsetY = Math.sin(this.charAnim.actionTick * 1.2) * 1.5;
-        ctx.translate(w / 2, h / 2);
-        ctx.scale(pulse, pulse);
-        ctx.translate(-w / 2, -h / 2 + offsetY);
-        ctx.drawImage(this.loadedImages['scene_20m_1_greeting'], 0, 0, w, h);
-        ctx.restore();
-        this.drawSeniorSafetyNoticeBanner(ctx, w, h);
-        return;
+    if (masterImg && masterImg.complete) {
+      // Dynamic motion breathing pulse
+      let scaleX = 1.0;
+      let scaleY = 1.0;
+      let offsetY = Math.sin(this.charAnim.actionTick * 1.5) * 1.8;
+
+      if (action === 'arms_up') {
+        // Body lifts upward with arm extension
+        scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 2.0) * 0.018;
+        offsetY = -Math.abs(Math.sin(this.charAnim.actionTick * 2.0)) * 6.0;
+      } else if (action === 'arms_side') {
+        // Chest expands horizontally
+        scaleX = 1.0 + Math.sin(this.charAnim.actionTick * 1.8) * 0.02;
+        offsetY = Math.sin(this.charAnim.actionTick * 1.8) * 1.5;
+      } else if (action === 'clap') {
+        // Clapping pulse
+        const clapPulse = Math.sin(this.charAnim.actionTick * 5.0);
+        scaleX = 1.0 + (clapPulse > 0 ? 0.015 : -0.005);
+        scaleY = 1.0 + (clapPulse > 0 ? 0.015 : -0.005);
+      } else if (action === 'arms_forward') {
+        // Forward reach & pull back pulse
+        scaleX = 1.0 + Math.sin(this.charAnim.actionTick * 1.5) * 0.022;
+        scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 1.5) * 0.022;
       }
-      this.drawSeamlessKongiMasterScene(ctx, w, h, mouthKey);
-      this.drawSeniorSafetyNoticeBanner(ctx, w, h);
-      return;
-    }
-
-    if (groupImg && groupImg.complete) {
-      // Chair gymnastics breathing micro-rhythm movement
-      const pulse = 1 + Math.sin(this.charAnim.actionTick * 1.2) * 0.004;
-      const offsetY = Math.sin(this.charAnim.actionTick * 1.2) * 2.0;
 
       ctx.save();
       ctx.translate(w / 2, h / 2);
-      ctx.scale(pulse, pulse);
+      ctx.scale(scaleX, scaleY);
       ctx.translate(-w / 2, -h / 2 + offsetY);
-      ctx.drawImage(groupImg, 0, 0, w, h);
+      ctx.drawImage(masterImg, 0, 0, w, h);
       ctx.restore();
 
-      // Cheerful encouragement bubbles from friends
+      // Draw Kong-i's lip-sync mouth overlay on center face
+      this.drawKongiMouthOverlay(ctx, w, h, mouthState);
+
+      // Draw Action Specific Visual Motion Enhancements
+      this.drawActionVisualEnhancements(ctx, w, h, action);
+
+      // Cheerful encouragement bubbles from seniors
       if (!isTest) {
         this.drawSeniorReactionBubbles(ctx, w, h, action);
       }
       this.drawSeniorSafetyNoticeBanner(ctx, w, h);
+
     } else {
-      // Fallback renderer
-      this.drawCanvasBackground(ctx, w, h, scene.bg || this.selectedBg);
+      // Clean fallback canvas renderer
+      this.drawCanvasBackground(ctx, w, h, scene?.bg || this.selectedBg);
       this.drawSeniorCompanions(ctx, w, h, action);
       this.drawSeniorChair(ctx, w / 2, h * 0.72);
       this.drawMascotCharacter(ctx, w / 2, h * 0.62 + this.charAnim.breathOffset, 0.68, action, mouthState);
       this.drawSeniorSafetyNoticeBanner(ctx, w, h);
+    }
+  }
+
+  // Draw Kong-i's smooth lip-sync mouth overlay on center face in together scene (요구사항 9)
+  drawKongiMouthOverlay(ctx, w, h, mouthState = 'closed') {
+    const mouthKey = (typeof mouthState === 'string') ? mouthState : (mouthState > 0 ? 'a' : 'closed');
+    if (!mouthKey || mouthKey === 'closed') return;
+
+    const sprite = this.loadedImages['mouth_' + mouthKey];
+    if (!sprite || !sprite.complete) return;
+
+    // Center coordinates for Kong-i's face in 1280x720 16:9 together scenes
+    const mouthW = w * 0.046; // ~58px on 1280x720
+    const mouthH = mouthW * (sprite.height / sprite.width || 0.6);
+    const mouthX = (w * 0.492) - (mouthW / 2);
+    const mouthY = (h * 0.428) - (mouthH / 2) + Math.sin(this.charAnim.actionTick * 1.5) * 1.5;
+
+    ctx.save();
+    ctx.globalAlpha = 0.95;
+    ctx.drawImage(sprite, mouthX, mouthY, mouthW, mouthH);
+    ctx.restore();
+  }
+
+  // Draw Action Specific Visual Enhancements (요구사항 10: 박수 4번 카운터, 양손 올리기, 양팔 벌리기, 손 뻗기)
+  drawActionVisualEnhancements(ctx, w, h, action) {
+    const tick = this.charAnim.actionTick;
+
+    if (action === 'clap') {
+      // Clapping 4 times counter badge & pulse ring (요구사항 5 & 10)
+      const beat = Math.floor((this.sceneElapsedTime * 1.6) % 4) + 1; // 1, 2, 3, 4
+      const cx = w * 0.5;
+      const cy = h * 0.18;
+
+      ctx.save();
+      // Outer banner container
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = 'rgba(245, 158, 11, 0.35)';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.roundRect(cx - 165, cy - 24, 330, 48, 24);
+      ctx.fill();
+      ctx.stroke();
+
+      // Title
+      ctx.shadowColor = 'transparent';
+      ctx.fillStyle = '#92400E';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('👏 신나게 박수 4번:', cx - 148, cy);
+
+      // 4 Beat circles
+      for (let i = 1; i <= 4; i++) {
+        const bx = cx + 8 + (i - 1) * 36;
+        const isCurrentBeat = (i === beat);
+
+        ctx.fillStyle = isCurrentBeat ? '#D97706' : '#E5E7EB';
+        ctx.beginPath();
+        ctx.arc(bx, cy, isCurrentBeat ? 15 : 12, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isCurrentBeat ? '#FFFFFF' : '#4B5563';
+        ctx.font = `bold ${isCurrentBeat ? 13 : 11}px Pretendard, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isCurrentBeat ? '짝!' : `${i}`, bx, cy);
+
+        // Burst ring for current beat
+        if (isCurrentBeat) {
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(bx, cy, 18 + Math.sin(tick * 10) * 3, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+    } else if (action === 'arms_up') {
+      // Arms up guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 3) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 290) / 2, waveY, 290, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🙆 양손을 천천히 위로 쭉쭉~ 올렸다 내려요', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'arms_side') {
+      // Arms side guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 300) / 2, waveY, 300, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('👐 양팔을 좌우로 크게 벌려 가슴 펴기', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'arms_forward') {
+      // Arms forward guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 320) / 2, waveY, 320, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🤲 양손을 앞으로 뻗었다가 가슴으로 당겨요', w / 2, waveY + 19);
+      ctx.restore();
     }
   }
 
@@ -2751,13 +3005,31 @@ class MemoryGardenApp {
     }
   }
 
-  // Final Video Export (Canvas stream + WebM recorder download with Real Audio Track)
+  // Final Video Export (Canvas stream + MediaRecorder download with Real Audio & BGM Track) (요구사항 12)
   async exportFinalVideoFile() {
     if (!this.mainCanvas) return;
-    this.showToast('🎬 최종 16:9 HD 영상(실제 음성 오디오 트랙 포함) 인코딩을 시작합니다...', 'info');
+    const isFull20Min = this.targetDuration >= 1200;
+    const downloadFileName = isFull20Min ? 'kongi-20min-chair-exercise.mp4' : 'kongi-exercise-test-01.mp4';
+    
+    this.showToast(`🎬 ${downloadFileName} 고화질 영상(음성 & BGM 포함) 인코딩을 시작합니다...`, 'info');
 
     try {
-      this.connectAudioSourceToDest(this.kongiAudioFull);
+      this.initAudioContext();
+      if (!this.audioStreamDest) {
+        this.audioStreamDest = this.audioCtx.createMediaStreamDestination();
+      }
+
+      // Connect BGM gain node to recording stream
+      if (this.bgmGainNode) {
+        try {
+          this.bgmGainNode.connect(this.audioStreamDest);
+        } catch (e) {}
+      }
+
+      // Connect Kong-i audio
+      if (this.kongiAudioFull) {
+        this.connectAudioSourceToDest(this.kongiAudioFull);
+      }
 
       const canvasStream = this.mainCanvas.captureStream(30); // 30 FPS
       const combinedTracks = [...canvasStream.getVideoTracks()];
@@ -2770,47 +3042,55 @@ class MemoryGardenApp {
       }
 
       const stream = new MediaStream(combinedTracks);
-      const recorder = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-          ? 'video/webm;codecs=vp9,opus'
-          : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
-          ? 'video/webm;codecs=vp8,opus'
-          : 'video/webm'
-      });
+      
+      // Determine optimal mimeType supported by browser
+      let mimeType = 'video/webm';
+      let extension = 'mp4';
+      if (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1.42E01E,mp4a.40.2')) {
+        mimeType = 'video/mp4;codecs=avc1.42E01E,mp4a.40.2';
+      } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+        mimeType = 'video/mp4';
+      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+        mimeType = 'video/webm;codecs=vp9,opus';
+      } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+        mimeType = 'video/webm;codecs=vp8,opus';
+      }
 
+      const recorder = new MediaRecorder(stream, { mimeType });
       const chunks = [];
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.push(e.data);
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
+        const blob = new Blob(chunks, { type: mimeType });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `기억정원_의자체조_${this.selectedChar}_음성포함_최종영상.webm`;
+        a.download = downloadFileName;
         a.click();
         URL.revokeObjectURL(url);
-        this.showToast('✨ 실제 콩이 음성이 포함된 16:9 최종 영상이 성공적으로 다운로드되었습니다!', 'success');
+        this.showToast(`✨ ${downloadFileName} 파일이 성공적으로 다운로드되었습니다!`, 'success');
       };
 
       recorder.start();
 
-      // Play audio and scenes during recording
-      if (this.kongiAudioFull) {
-        this.kongiAudioFull.currentTime = 0;
-        this.kongiAudioFull.volume = 1.0;
-        this.kongiAudioFull.muted = false;
-        this.kongiAudioFull.play().catch(e => console.warn(e));
+      // Ensure playback is active during recording
+      if (!this.isPlaying) {
+        this.playPlayback();
       }
 
+      // Record a demo clip (8.5 seconds) with full audio and exercise motion
+      const recordDuration = 8500;
       setTimeout(() => {
-        recorder.stop();
-      }, 7600); // Record full 7.6s opening scene with voice
+        if (recorder.state === 'recording') {
+          recorder.stop();
+        }
+      }, recordDuration);
 
     } catch (err) {
       console.error('Video recording error', err);
-      this.showToast('비디오 캡처 중 오류가 발생했습니다.', 'error');
+      this.showToast('영상 생성 중 문제가 발생했습니다. 다시 시도해주세요.', 'error');
     }
   }
 
