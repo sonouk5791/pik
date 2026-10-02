@@ -664,8 +664,13 @@ class MemoryGardenApp {
       bg_daycare: 'assets/bg_daycare.jpg',
       bg_garden: 'assets/bg_garden.jpg',
       bg_livingroom: 'assets/bg_livingroom.jpg',
-      bg_lilac: 'assets/scene_lilac_rhythm.jpg',
-      scene_lilac_rhythm: 'assets/scene_lilac_rhythm.jpg',
+      bg_lilac: 'assets/scene_lilac_1_prep.jpg',
+      scene_lilac_rhythm: 'assets/scene_lilac_1_prep.jpg',
+      // Official Master 20-Min Lilac Garden Shelter Seated Exercise Scenes
+      scene_lilac_1_prep: 'assets/scene_lilac_1_prep.jpg',
+      scene_lilac_2_arms_up: 'assets/scene_lilac_2_arms_up.jpg',
+      scene_lilac_3_clap: 'assets/scene_lilac_3_clap.jpg',
+      scene_lilac_4_finish: 'assets/scene_lilac_4_finish.jpg',
       // Master Reference Kong-i Assets (Strict Identity Lock)
       kongi_scene1_wave: 'assets/characters/kongi.png',
       kongi_original_master: 'assets/characters/kongi.png',
@@ -1457,12 +1462,36 @@ class MemoryGardenApp {
     const bg = typeof sceneOrBg === 'string' ? sceneOrBg : sceneOrBg?.bg;
     const action = typeof sceneOrBg === 'object' ? sceneOrBg?.action : null;
 
-    if (action === 'rhythm_bounce' || bg === 'bg_lilac' || (!action && this.selectedBg === 'bg_lilac')) {
-      return 'assets/scene_lilac_rhythm.jpg';
+    if (bg === 'bg_lilac' || (!bg && this.selectedBg === 'bg_lilac')) {
+      switch (action) {
+        case 'arms_up':
+        case 'shoulder_shrug':
+        case 'neck_tilt':
+        case 'stretch_up':
+          return 'assets/scene_lilac_2_arms_up.jpg';
+        case 'clap':
+        case 'rhythm_bounce':
+        case 'wrist_shake':
+        case 'knee_lift':
+        case 'ankle_flex':
+        case 'finger_wiggle':
+          return 'assets/scene_lilac_3_clap.jpg';
+        case 'arms_forward':
+        case 'stretch_side':
+        case 'safe_rest':
+        case 'deep_breath':
+        case 'finish':
+          return 'assets/scene_lilac_4_finish.jpg';
+        case 'wave':
+        case 'nod_smile':
+        case 'arms_side':
+        default:
+          return 'assets/scene_lilac_1_prep.jpg';
+      }
     }
     if (this.selectedChar === 'kongi') {
-      const action = scene?.action || 'wave';
-      switch (action) {
+      const act = action || 'wave';
+      switch (act) {
         case 'wave':
         case 'nod_smile':
           return 'assets/scene_together_wave.jpg';
@@ -1482,17 +1511,17 @@ class MemoryGardenApp {
       }
     }
 
-    if (scene.bg === 'bg_custom' && this.loadedImages['bg_custom']) {
+    if (sceneOrBg?.bg === 'bg_custom' && this.loadedImages['bg_custom']) {
       return this.loadedImages['bg_custom'].src;
     }
     const map = {
       bg_daycare: 'assets/bg_daycare.jpg',
       bg_garden: 'assets/bg_garden.jpg',
       bg_livingroom: 'assets/bg_livingroom.jpg',
-      bg_lilac: 'assets/scene_lilac_rhythm.jpg',
+      bg_lilac: 'assets/scene_lilac_1_prep.jpg',
       bg_classroom: 'assets/bg_daycare.jpg'
     };
-    return map[scene.bg] || 'assets/bg_daycare.jpg';
+    return map[bg] || 'assets/scene_lilac_1_prep.jpg';
   }
 
   getStatusLabel(status) {
@@ -2259,9 +2288,37 @@ class MemoryGardenApp {
 
     // 대표 배경: “라일락마을 정원 쉼터” 기본 통일 (요구사항 2, 4, 13)
     // 화면 배치: 중앙 앞쪽 콩이 + 양옆 토리/나비/보리 + 뒤쪽 정자 쉼터 한국인 어르신 4명 단체 운동
-    let togetherImgKey = 'scene_lilac_rhythm';
+    let togetherImgKey = 'scene_lilac_1_prep';
     if (this.selectedBg === 'bg_lilac' || scene?.bg === 'bg_lilac') {
-      togetherImgKey = 'scene_lilac_rhythm';
+      switch (action) {
+        case 'arms_up':
+        case 'shoulder_shrug':
+        case 'neck_tilt':
+        case 'stretch_up':
+          togetherImgKey = 'scene_lilac_2_arms_up';
+          break;
+        case 'clap':
+        case 'rhythm_bounce':
+        case 'wrist_shake':
+        case 'knee_lift':
+        case 'ankle_flex':
+        case 'finger_wiggle':
+          togetherImgKey = 'scene_lilac_3_clap';
+          break;
+        case 'arms_forward':
+        case 'stretch_side':
+        case 'safe_rest':
+        case 'deep_breath':
+        case 'finish':
+          togetherImgKey = 'scene_lilac_4_finish';
+          break;
+        case 'wave':
+        case 'nod_smile':
+        case 'arms_side':
+        default:
+          togetherImgKey = 'scene_lilac_1_prep';
+          break;
+      }
     } else {
       switch (action) {
         case 'wave':
@@ -2293,7 +2350,7 @@ class MemoryGardenApp {
       }
     }
 
-    let masterImg = this.loadedImages[togetherImgKey] || this.loadedImages['scene_lilac_rhythm'] || this.loadedImages['scene_together_wave'];
+    let masterImg = this.loadedImages[togetherImgKey] || this.loadedImages['scene_lilac_1_prep'] || this.loadedImages['scene_lilac_rhythm'] || this.loadedImages['scene_together_wave'];
 
     if (masterImg && masterImg.complete) {
       // Natural Joint & Body Movement Simulation (요구사항 6, 14, 15)

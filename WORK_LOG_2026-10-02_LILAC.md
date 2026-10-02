@@ -89,7 +89,27 @@
 
 ---
 
-## 5. 배포 정보
+## 5. 라일락 마을 정원 쉼터 4대 공식 마스터 단체 장면 연동 (최종 완성)
+
+사용자께서 등록해 주신 4장의 공식 마스터 체조 장면을 플랫폼 전반에 완전 매핑 완료:
+
+1. **1단계 준비운동 (`scene_lilac_1_prep.jpg`)**:
+   - 콩이, 토리, 나비, 보리와 어르신들이 함께 가슴을 펴고 양팔을 가볍게 벌리는 시작 동작
+   - 액션: `wave`, `nod_smile`, `arms_side`, `deep_breath`, `prep`
+2. **2단계 상체·팔 올리기 (`scene_lilac_2_arms_up.jpg`)**:
+   - 양팔을 하늘 높이 시원하게 쭉 올리며 기지개 켜는 상체 운동 동작
+   - 액션: `arms_up`, `shoulder_shrug`, `neck_tilt`, `stretch_up`
+3. **3단계 리듬·박수 치기 (`scene_lilac_3_clap.jpg`)**:
+   - 가슴 앞에서 손을 모아 신나게 박수 4번을 치며 리듬을 타는 동작
+   - 액션: `clap`, `rhythm_bounce`, `wrist_shake`, `knee_lift`, `ankle_flex`, `finger_wiggle`
+4. **4단계 마무리 스트레칭 (`scene_lilac_4_finish.jpg`)**:
+   - 깊게 호흡하며 전신을 편안히 이완하고 마무리 인사를 전하는 동작
+   - 액션: `arms_forward`, `stretch_side`, `safe_rest`, `finish`
+
+---
+
+## 6. 최종 배포 및 검증 정보
 
 - **GitHub 저장소**: `sonouk5791/pik` (branch: `main`)
 - **Vercel 실서비스 URL**: [https://pik-woad.vercel.app/](https://pik-woad.vercel.app/)
+- **자동 브라우저 E2E 검증 통과**: STEP 1 ~ STEP 5 전체 워크플로우 정상 검증 완료
