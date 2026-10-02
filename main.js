@@ -12,6 +12,13 @@ const EXERCISE_ACTIONS = {
     desc: '가볍게 손을 흔들며 시작 인사와 집중 유도',
     safeRule: '의자 착석, 어깨 무리 없는 각도'
   },
+  rhythm_bounce: {
+    id: 'rhythm_bounce',
+    name: '양손 가볍게 쥐고 리듬 타기',
+    icon: '✊',
+    desc: '양손 주먹을 가슴 옆에 두고 팔꿈치와 무릎으로 가볍게 위아래 리듬 타기',
+    safeRule: '과도한 반동 없이 어깨와 무릎에 무리 없는 부드러운 박자'
+  },
   arms_up: {
     id: 'arms_up',
     name: '양팔 위로 올리기 (기지개)',
@@ -114,6 +121,20 @@ const EXERCISE_ACTIONS = {
 
 // Preset Projects Data
 const PRESETS = {
+  preset_lilac_rhythm: {
+    name: '🌸 라일락 마을 쉼터 콩이 리듬체조 (신규 대표 단체 장면)',
+    char: 'kongi',
+    duration: 60,
+    bg: 'bg_lilac',
+    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
+    bgm: 'lilac_walk',
+    script: `어르신들 안녕하세요! 라일락 향기 가득한 정원 쉼터에서 함께하는 리듬체조 시간이에요.
+양손 주먹을 가볍게 쥐고 가슴 옆으로 올려볼게요.
+팔꿈치를 가볍게 굽힌 채 위아래로 신나게 리듬을 타보세요! 하나 둘 셋 넷!
+무릎도 살짝 굽히고 안정감 있게 리듬을 느껴보아요.
+얼굴 가득 즐거운 미소를 지으며 신나게 리듬을 타볼까요?
+다 함께 박자 맞춰 하나 둘! 오늘도 정말 멋지고 활기차게 잘하셨어요!`
+  },
   preset_senior_test: {
     name: '🌸 기억정원 1분 테스트 의자체조 (콩이 메인 & 친구들·어르신 함께 운동)',
     char: 'kongi',
@@ -331,7 +352,7 @@ class MemoryGardenApp {
     this.bindDOM();
     this.preloadAssets();
     this.initAudioContext();
-    this.loadProject('preset_senior_test');
+    this.loadProject('preset_lilac_rhythm');
     this.setupSpeechSynthesis();
     this.setupAutoplayUnlock();
   }
@@ -488,6 +509,13 @@ class MemoryGardenApp {
     document.getElementById('btnAnalyzeScript')?.addEventListener('click', () => this.analyzeScriptAndProceed());
 
     // Preset Script Chips
+    document.getElementById('btnPresetLilacRhythm')?.addEventListener('click', () => {
+      this.setScriptContent(PRESETS.preset_lilac_rhythm.script);
+      this.selectedBg = 'bg_lilac';
+      this.targetDuration = 60;
+      this.updateDurationNotice(60);
+      this.showToast('🌸 라일락 마을 쉼터 콩이 리듬체조 대본이 적용되었습니다.', 'info');
+    });
     document.getElementById('btnPresetTest1Min')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_senior_test.script);
       this.targetDuration = 60;
@@ -621,6 +649,8 @@ class MemoryGardenApp {
       bg_daycare: 'assets/bg_daycare.jpg',
       bg_garden: 'assets/bg_garden.jpg',
       bg_livingroom: 'assets/bg_livingroom.jpg',
+      bg_lilac: 'assets/scene_lilac_rhythm.jpg',
+      scene_lilac_rhythm: 'assets/scene_lilac_rhythm.jpg',
       // Master Reference Kong-i Assets (Strict Identity Lock)
       kongi_scene1_wave: 'assets/characters/kongi.png',
       kongi_original_master: 'assets/characters/kongi.png',
@@ -1254,6 +1284,9 @@ class MemoryGardenApp {
     if (/앞으로.*뻗|뻗었다.*당겨|앞으로.*당겨|가슴.*쪽으로.*당겨/.test(t)) {
       return 'arms_forward';
     }
+    if (/리듬|주먹.*올려|위아래로.*리듬|팔꿈치.*굽|반동|신나게.*리듬|박자.*맞춰/.test(t)) {
+      return 'rhythm_bounce';
+    }
     if (/안녕|반갑|시작|콩이|토리|나비|보리|만나|즐겁게.*운동/.test(t)) {
       return 'wave';
     }
@@ -1314,7 +1347,7 @@ class MemoryGardenApp {
       card.draggable = true;
       card.dataset.index = index;
 
-      const bgThumbnailUrl = this.getBgThumbnailUrl(scene.bg);
+      const bgThumbnailUrl = this.getBgThumbnailUrl(scene);
 
       card.innerHTML = `
         <div class="scene-drag-handle" title="끌어서 순서 변경">⠿</div>
@@ -1384,7 +1417,13 @@ class MemoryGardenApp {
     this.renderJumpList();
   }
 
-  getBgThumbnailUrl(scene) {
+  getBgThumbnailUrl(sceneOrBg) {
+    const bg = typeof sceneOrBg === 'string' ? sceneOrBg : sceneOrBg?.bg;
+    const action = typeof sceneOrBg === 'object' ? sceneOrBg?.action : null;
+
+    if (action === 'rhythm_bounce' || bg === 'bg_lilac' || (!action && this.selectedBg === 'bg_lilac')) {
+      return 'assets/scene_lilac_rhythm.jpg';
+    }
     if (this.selectedChar === 'kongi') {
       const action = scene?.action || 'wave';
       switch (action) {
@@ -1414,7 +1453,7 @@ class MemoryGardenApp {
       bg_daycare: 'assets/bg_daycare.jpg',
       bg_garden: 'assets/bg_garden.jpg',
       bg_livingroom: 'assets/bg_livingroom.jpg',
-      bg_lilac: 'assets/bg_garden.jpg',
+      bg_lilac: 'assets/scene_lilac_rhythm.jpg',
       bg_classroom: 'assets/bg_daycare.jpg'
     };
     return map[scene.bg] || 'assets/bg_daycare.jpg';
@@ -2138,6 +2177,9 @@ class MemoryGardenApp {
     const w = this.mainCanvas.width;
     const h = this.mainCanvas.height;
 
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
     const currentScene = this.scenes[this.currentSceneIdx] || {
       script: '대본을 입력해 주세요.',
       action: 'wave',
@@ -2176,37 +2218,42 @@ class MemoryGardenApp {
 
   // Unified Renderer: Senior Chair Gymnastics (Kongi Center + Tori, Nabi, Bori + 4 Seniors Together)
   drawTogetherExerciseScene(ctx, w, h, scene, mouthState, isTest = false) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     const action = scene?.action || 'wave';
 
     // Map to together scenes where Kong-i, Tori, Nabi, Bori and Seniors all exercise together
     let togetherImgKey = 'scene_together_wave';
-    switch (action) {
-      case 'wave':
-      case 'nod_smile':
-        togetherImgKey = 'scene_together_wave';
-        break;
-      case 'arms_up':
-      case 'shoulder_shrug':
-      case 'neck_tilt':
-        togetherImgKey = 'scene_together_arms_up';
-        break;
-      case 'arms_side':
-        togetherImgKey = 'scene_together_arms_side';
-        break;
-      case 'clap':
-        togetherImgKey = 'scene_together_clap';
-        break;
-      case 'knee_lift':
-      case 'ankle_flex':
-        togetherImgKey = this.loadedImages['scene_group_knee_lift'] ? 'scene_group_knee_lift' : 'scene_together_arms_up';
-        break;
-      case 'arms_forward':
-      case 'deep_breath':
-      case 'stretch_side':
-      case 'safe_rest':
-      default:
-        togetherImgKey = 'scene_together_breath';
-        break;
+    if (action === 'rhythm_bounce' || scene?.bg === 'bg_lilac' || (this.selectedBg === 'bg_lilac' && action === 'rhythm_bounce')) {
+      togetherImgKey = 'scene_lilac_rhythm';
+    } else {
+      switch (action) {
+        case 'wave':
+        case 'nod_smile':
+          togetherImgKey = 'scene_together_wave';
+          break;
+        case 'arms_up':
+        case 'shoulder_shrug':
+        case 'neck_tilt':
+          togetherImgKey = 'scene_together_arms_up';
+          break;
+        case 'arms_side':
+          togetherImgKey = 'scene_together_arms_side';
+          break;
+        case 'clap':
+          togetherImgKey = 'scene_together_clap';
+          break;
+        case 'knee_lift':
+        case 'ankle_flex':
+          togetherImgKey = this.loadedImages['scene_group_knee_lift'] ? 'scene_group_knee_lift' : 'scene_together_arms_up';
+          break;
+        case 'arms_forward':
+        case 'deep_breath':
+        case 'stretch_side':
+        case 'safe_rest':
+        default:
+          togetherImgKey = 'scene_together_breath';
+          break;
+      }
     }
 
     let masterImg = this.loadedImages[togetherImgKey] || this.loadedImages['scene_together_wave'] || this.loadedImages['scene_20m_1_greeting'];
@@ -2217,7 +2264,11 @@ class MemoryGardenApp {
       let scaleY = 1.0;
       let offsetY = Math.sin(this.charAnim.actionTick * 1.5) * 1.8;
 
-      if (action === 'arms_up') {
+      if (action === 'rhythm_bounce') {
+        // Up-and-down rhythmic bounce motion
+        scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 3.5) * 0.018;
+        offsetY = Math.sin(this.charAnim.actionTick * 3.5) * 4.5;
+      } else if (action === 'arms_up') {
         // Body lifts upward with arm extension
         scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 2.0) * 0.018;
         offsetY = -Math.abs(Math.sin(this.charAnim.actionTick * 2.0)) * 6.0;
@@ -2337,6 +2388,55 @@ class MemoryGardenApp {
           ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.arc(bx, cy, 18 + Math.sin(tick * 10) * 3, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+    } else if (action === 'rhythm_bounce') {
+      // Rhythm bounce beat banner & pulse (신규 대표 동작)
+      const beat = Math.floor((this.sceneElapsedTime * 1.5) % 4) + 1;
+      const cx = w * 0.5;
+      const cy = h * 0.18;
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.strokeStyle = '#7C3AED';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = 'rgba(124, 58, 237, 0.35)';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.roundRect(cx - 175, cy - 24, 350, 48, 24);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.shadowColor = 'transparent';
+      ctx.fillStyle = '#5B21B6';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✊ 가볍게 주먹 쥐고 리듬 타기:', cx - 158, cy);
+
+      for (let i = 1; i <= 4; i++) {
+        const bx = cx + 55 + (i - 1) * 28;
+        const isCurrentBeat = (i === beat);
+
+        ctx.fillStyle = isCurrentBeat ? '#7C3AED' : '#E5E7EB';
+        ctx.beginPath();
+        ctx.arc(bx, cy, isCurrentBeat ? 13 : 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isCurrentBeat ? '#FFFFFF' : '#4B5563';
+        ctx.font = `bold ${isCurrentBeat ? 12 : 10}px Pretendard, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${i}`, bx, cy);
+
+        if (isCurrentBeat) {
+          ctx.strokeStyle = 'rgba(124, 58, 237, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(bx, cy, 16 + Math.sin(tick * 10) * 3, 0, Math.PI * 2);
           ctx.stroke();
         }
       }
@@ -2736,7 +2836,8 @@ class MemoryGardenApp {
       ctx.font = '12px "Pretendard", "Noto Sans KR", sans-serif';
       ctx.fillStyle = '#991B1B';
       ctx.fillText(`(필요 원본 파일: assets/characters/${charKey}.png)`, 0, 16);
-      ctx.restore();
+      ctx.restore(); // restore inner
+      ctx.restore(); // restore outer
       return;
     }
 
