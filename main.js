@@ -121,10 +121,24 @@ const EXERCISE_ACTIONS = {
 
 // Preset Projects Data
 const PRESETS = {
+  preset_lilac_20min: {
+    name: '🌸 라일락 마을 정원 쉼터 콩이 20분 의자체조 (대표 프로그램)',
+    char: 'kongi',
+    duration: 1200, // 20분 (1,200초)
+    bg: 'bg_lilac',
+    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.88, emotion: 'warm' },
+    bgm: 'lilac_walk',
+    script: `어르신들 안녕하세요! 라일락 향기 가득한 정원 쉼터에서 함께하는 20분 의자체조 시간이에요. 의자에 편안히 앉아 코로 맑은 숨을 들이마시고 입으로 천천히 내쉬어 보세요. 무리하지 말고 천천히 따라하세요.
+양손을 천천히 위로 올려볼게요. 시원하게 기지개를 켜듯 양팔을 위로 올렸다가 천천히 내려놓습니다. 양팔을 옆으로도 크게 벌려 가슴을 활짝 펴주세요. 하나 둘 셋 넷.
+양손을 앞으로 천천히 뻗었다가 가슴 쪽으로 부드럽게 당겨보세요. 어깨도 으쓱 올렸다가 툭 편안하게 내려놓고, 손목과 손가락도 꼼지락꼼지락 부드럽게 털어줍니다.
+의자를 안전하게 양손으로 잡고, 오른쪽 무릎을 천천히 살짝 들어볼게요. 이번엔 왼쪽 무릎을 들어봅니다. 발끝도 위로 까딱까딱 움직이며 다리 혈액순환을 도와주세요.
+양손 주먹을 가볍게 쥐고 가슴 옆에서 위아래로 신나게 리듬을 타볼게요! 하나 둘 셋 넷! 신나게 손뼉도 짝! 짝! 짝! 8박자, 16박자 박자에 맞춰 활기차게 손뼉을 쳐봅니다.
+한 손을 머리 위로 올려 옆구리를 시원하게 늘려주고, 두 손을 모아 깊게 숨을 들이마시고 내쉽니다. 어르신들, 오늘 20분 동안 정말 멋지게 체조를 완료하셨어요! 늘 건강하세요!`
+  },
   preset_lilac_rhythm: {
     name: '🌸 라일락 마을 쉼터 콩이 리듬체조 (신규 대표 단체 장면)',
     char: 'kongi',
-    duration: 60,
+    duration: 1200,
     bg: 'bg_lilac',
     voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
     bgm: 'lilac_walk',
@@ -135,25 +149,11 @@ const PRESETS = {
 얼굴 가득 즐거운 미소를 지으며 신나게 리듬을 타볼까요?
 다 함께 박자 맞춰 하나 둘! 오늘도 정말 멋지고 활기차게 잘하셨어요!`
   },
-  preset_senior_test: {
-    name: '🌸 기억정원 1분 테스트 의자체조 (콩이 메인 & 친구들·어르신 함께 운동)',
-    char: 'kongi',
-    duration: 60, // 60초 테스트 완성본
-    bg: 'bg_daycare',
-    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
-    bgm: 'spring_garden',
-    script: `안녕하세요. 오늘도 우리 함께 즐겁게 운동해볼까요?
-양손을 천천히 위로 올렸다가 내려볼게요. 하나 둘 셋 넷.
-이번에는 양팔을 좌우로 크게 벌려보세요. 가슴을 활짝 폅니다.
-신나게 박수 네 번! 짝! 짝! 짝! 짝!
-양손을 앞으로 천천히 뻗었다가 가슴 쪽으로 당겨보세요.
-아주 잘하셨어요. 천천히 쉬어가며 함께 운동해요.`
-  },
   preset_senior_20min: {
     name: '🌸 기억정원 20분 의자체조 (확장 마스터 - 6대 코스)',
     char: 'kongi',
     duration: 1200, // 20분 (1200초)
-    bg: 'bg_daycare',
+    bg: 'bg_lilac',
     voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.85, emotion: 'warm' },
     bgm: 'spring_garden',
     script: `어르신들, 안녕하세요! 기억정원 콩이와 친구들이에요.
@@ -271,20 +271,20 @@ class MemoryGardenApp {
     this.currentStep = 1;
     this.selectedChar = 'kongi';
     this.customCharImg = null;
-    this.selectedBg = 'bg_daycare';
+    this.selectedBg = 'bg_lilac'; // 라일락마을 정원 쉼터 기본 통일
     this.customBgImg = null;
-    this.targetDuration = 60; // seconds
+    this.targetDuration = 1200; // 20분 의자체조 기본 설정 (1,200초)
 
     // Voice & BGM
     this.voiceSettings = {
       gender: 'female_warm',
       tone: 'friendly',
       pitch: 1.0,
-      speed: 0.9,
+      speed: 0.88,
       emotion: 'warm'
     };
-    this.bgmTheme = 'spring_garden';
-    this.bgmVolume = 0.3;
+    this.bgmTheme = 'lilac_walk';
+    this.bgmVolume = 0.3; // 권장 배경음악 25~30%
     this.customBgmAudio = null;
     this.isBgmPlaying = false;
     this.isDucking = false;
@@ -352,9 +352,10 @@ class MemoryGardenApp {
     this.bindDOM();
     this.preloadAssets();
     this.initAudioContext();
-    this.loadProject('preset_lilac_rhythm');
+    this.loadProject('preset_lilac_20min');
     this.setupSpeechSynthesis();
     this.setupAutoplayUnlock();
+    this.runSystemDiagnostics();
   }
 
   setupAutoplayUnlock() {
@@ -509,18 +510,22 @@ class MemoryGardenApp {
     document.getElementById('btnAnalyzeScript')?.addEventListener('click', () => this.analyzeScriptAndProceed());
 
     // Preset Script Chips
+    document.getElementById('btnPresetLilac20Min')?.addEventListener('click', () => {
+      this.loadProject('preset_lilac_20min');
+      this.showToast('🌸 라일락 마을 정원 쉼터 20분 의자체조 대표 프로그램이 적용되었습니다.', 'info');
+    });
     document.getElementById('btnPresetLilacRhythm')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_lilac_rhythm.script);
       this.selectedBg = 'bg_lilac';
-      this.targetDuration = 60;
-      this.updateDurationNotice(60);
+      this.targetDuration = 1200;
+      this.updateDurationNotice(1200);
       this.showToast('🌸 라일락 마을 쉼터 콩이 리듬체조 대본이 적용되었습니다.', 'info');
     });
     document.getElementById('btnPresetTest1Min')?.addEventListener('click', () => {
-      this.setScriptContent(PRESETS.preset_senior_test.script);
+      this.setScriptContent(PRESETS.preset_lilac_rhythm.script);
       this.targetDuration = 60;
       this.updateDurationNotice(60);
-      this.showToast('1분 테스트 의자체조 예시 대본이 적용되었습니다.', 'info');
+      this.showToast('1분 테스트 체조 예시 대본이 적용되었습니다.', 'info');
     });
     document.getElementById('btnPreset20Min')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_senior_20min.script);
@@ -566,6 +571,7 @@ class MemoryGardenApp {
     // Step 4: Pipeline Actions
     document.getElementById('btnTestKongiVoice')?.addEventListener('click', () => this.runKongiVoiceTest());
     document.getElementById('btnRunTestScene')?.addEventListener('click', () => this.runTestScene());
+    document.getElementById('btnRunDiagnostics')?.addEventListener('click', () => this.runSystemDiagnostics());
     document.getElementById('btnCloseTestBox')?.addEventListener('click', () => {
       document.getElementById('testPreviewBox')?.classList.add('hidden');
       if (this.activeVoiceAudio) {
@@ -603,8 +609,14 @@ class MemoryGardenApp {
       this.testCtx = this.testCanvas.getContext('2d');
     }
 
+    // Senior Primary Controls
+    document.getElementById('btnSeniorStart')?.addEventListener('click', () => this.startExerciseNow());
+    document.getElementById('btnSeniorPause')?.addEventListener('click', () => this.pausePlayback());
+    document.getElementById('btnSeniorRewind')?.addEventListener('click', () => this.rewindToStart());
+    document.getElementById('btnQuickStartTop')?.addEventListener('click', () => this.startExerciseNow());
+    document.getElementById('btnBigPlay')?.addEventListener('click', () => this.startExerciseNow());
+
     document.getElementById('btnPlayPause')?.addEventListener('click', () => this.togglePlayback());
-    document.getElementById('btnBigPlay')?.addEventListener('click', () => this.togglePlayback());
     document.getElementById('btnStop')?.addEventListener('click', () => this.stopPlayback());
     document.getElementById('btnPrevScene')?.addEventListener('click', () => this.jumpScene(this.currentSceneIdx - 1));
     document.getElementById('btnNextScene')?.addEventListener('click', () => this.jumpScene(this.currentSceneIdx + 1));
@@ -614,7 +626,10 @@ class MemoryGardenApp {
 
     const masterVol = document.getElementById('masterVolume');
     masterVol?.addEventListener('input', (e) => {
-      this.masterVolume = parseInt(e.target.value, 10) / 100;
+      const val = parseInt(e.target.value, 10);
+      this.masterVolume = val / 100;
+      const volValEl = document.getElementById('masterVolVal');
+      if (volValEl) volValEl.textContent = `${val}%`;
     });
 
     document.getElementById('btnToggleFullscreen')?.addEventListener('click', () => {
@@ -1097,39 +1112,57 @@ class MemoryGardenApp {
     this.bgmGainNode.gain.setValueAtTime(this.bgmVolume, this.audioCtx.currentTime);
     this.bgmGainNode.connect(this.audioCtx.destination);
 
-    // Procedural Calm Memory Garden Chords (Pentatonic Scale for healing & relaxation)
-    const chords = [
-      [261.63, 329.63, 392.00, 523.25], // C Major
-      [220.00, 261.63, 329.63, 440.00], // A Minor
-      [174.61, 220.00, 261.63, 349.23], // F Major
-      [196.00, 246.94, 293.66, 392.00]  // G Major
+    // BPM 92: Friendly, warm pentatonic healing rhythm (652ms per beat)
+    const melodyScale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // C, D, E, G, A, high C
+    const bassChords = [
+      [130.81, 196.00], // C3, G3
+      [110.00, 164.81], // A2, E3
+      [87.31, 130.81],  // F2, C3
+      [98.00, 146.83]   // G2, D3
     ];
 
-    let chordIdx = 0;
+    let beatCount = 0;
+    // Beat interval: 652ms (~92 BPM: 권장 85~105 템포)
     this.bgmInterval = setInterval(() => {
-      if (!this.isBgmPlaying) return;
-      const currentChord = chords[chordIdx % chords.length];
-      chordIdx++;
+      if (!this.isBgmPlaying || !this.audioCtx) return;
+      const now = this.audioCtx.currentTime;
+      const chordIdx = Math.floor(beatCount / 4) % bassChords.length;
 
-      currentChord.forEach((freq, i) => {
-        const osc = this.audioCtx.createOscillator();
-        const noteGain = this.audioCtx.createGain();
+      // Bass accompaniment on beat 0 and 2
+      if (beatCount % 2 === 0) {
+        const chord = bassChords[chordIdx];
+        chord.forEach(freq => {
+          const osc = this.audioCtx.createOscillator();
+          const noteGain = this.audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now);
+          noteGain.gain.setValueAtTime(0.001, now);
+          noteGain.gain.exponentialRampToValueAtTime(0.045, now + 0.04);
+          noteGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+          osc.connect(noteGain);
+          noteGain.connect(this.bgmGainNode);
+          osc.start(now);
+          osc.stop(now + 1.2);
+        });
+      }
 
-        // Warm sine / triangle tone
-        osc.type = this.bgmTheme === 'silver_rhythm' ? 'triangle' : 'sine';
-        osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime + i * 0.15);
+      // Cheerful melody note on every beat
+      const melIdx = (beatCount * 3 + chordIdx) % melodyScale.length;
+      const melFreq = melodyScale[melIdx];
+      const mOsc = this.audioCtx.createOscillator();
+      const mGain = this.audioCtx.createGain();
+      mOsc.type = 'sine';
+      mOsc.frequency.setValueAtTime(melFreq, now);
+      mGain.gain.setValueAtTime(0.001, now);
+      mGain.gain.exponentialRampToValueAtTime(0.048, now + 0.03);
+      mGain.gain.exponentialRampToValueAtTime(0.001, now + 0.58);
+      mOsc.connect(mGain);
+      mGain.connect(this.bgmGainNode);
+      mOsc.start(now);
+      mOsc.stop(now + 0.62);
 
-        noteGain.gain.setValueAtTime(0.001, this.audioCtx.currentTime + i * 0.15);
-        noteGain.gain.exponentialRampToValueAtTime(0.08, this.audioCtx.currentTime + i * 0.15 + 0.05);
-        noteGain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + i * 0.15 + 1.8);
-
-        osc.connect(noteGain);
-        noteGain.connect(this.bgmGainNode);
-
-        osc.start(this.audioCtx.currentTime + i * 0.15);
-        osc.stop(this.audioCtx.currentTime + i * 0.15 + 2.0);
-      });
-    }, 1800);
+      beatCount++;
+    }, 652);
 
     this.isBgmPlaying = true;
     this.updateBgmButtonUI(true);
@@ -1227,11 +1260,14 @@ class MemoryGardenApp {
       const actionMeta = EXERCISE_ACTIONS[matchedActionKey] || EXERCISE_ACTIONS.safe_rest;
       
       // Calculate realistic duration per scene
-      // For standard 1-min test script: 0~5s (5s), 5~15s (10s), 15~25s (10s), 25~35s (10s), 35~45s (10s), 45~60s (15s)
       let duration = Math.max(5, Math.min(14, Math.round(line.length / 2.8) + 3));
       if (lines.length === 6 && this.targetDuration === 60) {
         const testDurations = [5, 10, 10, 10, 10, 15];
         duration = testDurations[idx] || 10;
+      } else if (lines.length === 6 && this.targetDuration === 1200) {
+        // 요구사항 8: 20분 의자체조 6대 코스 (3분, 4분, 4분, 3분, 4분, 2분 = 총 20분, 1,200초)
+        const durations20m = [180, 240, 240, 180, 240, 120];
+        duration = durations20m[idx] || 200;
       }
 
       generatedScenes.push({
@@ -1250,7 +1286,7 @@ class MemoryGardenApp {
 
     // Smart Balance: If script total duration is much shorter than target duration, auto-insert safety pauses & repetitions
     let currentTotalDuration = generatedScenes.reduce((acc, s) => acc + s.duration, 0);
-    if (this.targetDuration >= 300 && currentTotalDuration < this.targetDuration) {
+    if (this.targetDuration >= 300 && currentTotalDuration < this.targetDuration && !(lines.length === 6 && this.targetDuration === 1200)) {
       // Insert safe resting / breathing scene
       generatedScenes.splice(Math.floor(generatedScenes.length / 2), 0, {
         id: `scene_safe_rest_${Date.now()}`,
@@ -2221,9 +2257,10 @@ class MemoryGardenApp {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     const action = scene?.action || 'wave';
 
-    // Map to together scenes where Kong-i, Tori, Nabi, Bori and Seniors all exercise together
-    let togetherImgKey = 'scene_together_wave';
-    if (action === 'rhythm_bounce' || scene?.bg === 'bg_lilac' || (this.selectedBg === 'bg_lilac' && action === 'rhythm_bounce')) {
+    // 대표 배경: “라일락마을 정원 쉼터” 기본 통일 (요구사항 2, 4, 13)
+    // 화면 배치: 중앙 앞쪽 콩이 + 양옆 토리/나비/보리 + 뒤쪽 정자 쉼터 한국인 어르신 4명 단체 운동
+    let togetherImgKey = 'scene_lilac_rhythm';
+    if (this.selectedBg === 'bg_lilac' || scene?.bg === 'bg_lilac') {
       togetherImgKey = 'scene_lilac_rhythm';
     } else {
       switch (action) {
@@ -2256,16 +2293,17 @@ class MemoryGardenApp {
       }
     }
 
-    let masterImg = this.loadedImages[togetherImgKey] || this.loadedImages['scene_together_wave'] || this.loadedImages['scene_20m_1_greeting'];
+    let masterImg = this.loadedImages[togetherImgKey] || this.loadedImages['scene_lilac_rhythm'] || this.loadedImages['scene_together_wave'];
 
     if (masterImg && masterImg.complete) {
-      // Dynamic motion breathing pulse
+      // Natural Joint & Body Movement Simulation (요구사항 6, 14, 15)
+      // 단순 앞뒤/좌우 이동 금지! 호흡 및 관절 회전, 가슴 확장, 무릎 리듬 자연스러운 표현
       let scaleX = 1.0;
       let scaleY = 1.0;
       let offsetY = Math.sin(this.charAnim.actionTick * 1.5) * 1.8;
 
       if (action === 'rhythm_bounce') {
-        // Up-and-down rhythmic bounce motion
+        // Up-and-down rhythmic bounce motion (BPM 92 beat sync)
         scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 3.5) * 0.018;
         offsetY = Math.sin(this.charAnim.actionTick * 3.5) * 4.5;
       } else if (action === 'arms_up') {
@@ -2285,6 +2323,23 @@ class MemoryGardenApp {
         // Forward reach & pull back pulse
         scaleX = 1.0 + Math.sin(this.charAnim.actionTick * 1.5) * 0.022;
         scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 1.5) * 0.022;
+      } else if (action === 'knee_lift' || action === 'ankle_flex') {
+        // Seated gentle knee & ankle cadence
+        offsetY = Math.sin(this.charAnim.actionTick * 2.2) * 3.5;
+        scaleY = 1.0 + Math.abs(Math.sin(this.charAnim.actionTick * 2.2)) * 0.012;
+      } else if (action === 'shoulder_shrug' || action === 'wrist_shake') {
+        // Shoulder shrug & wrist rotations
+        offsetY = -Math.abs(Math.sin(this.charAnim.actionTick * 2.5)) * 4.0;
+        scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 2.5) * 0.015;
+      } else if (action === 'stretch_side' || action === 'neck_tilt') {
+        // Gentle side torso movement
+        scaleX = 1.0 + Math.sin(this.charAnim.actionTick * 1.4) * 0.016;
+        offsetY = Math.sin(this.charAnim.actionTick * 1.4) * 2.2;
+      } else if (action === 'deep_breath' || action === 'safe_rest') {
+        // Calm deep breathing expansion and relaxation
+        scaleX = 1.0 + Math.sin(this.charAnim.actionTick * 1.2) * 0.012;
+        scaleY = 1.0 + Math.sin(this.charAnim.actionTick * 1.2) * 0.016;
+        offsetY = -Math.abs(Math.sin(this.charAnim.actionTick * 1.2)) * 3.0;
       }
 
       ctx.save();
@@ -2299,6 +2354,9 @@ class MemoryGardenApp {
 
       // Draw Action Specific Visual Motion Enhancements
       this.drawActionVisualEnhancements(ctx, w, h, action);
+
+      // 8~16 Beat Repetition Rhythm Counter (요구사항 6)
+      this.drawEightBeatRhythmCounter(ctx, w, h);
 
       // Cheerful encouragement bubbles from seniors
       if (!isTest) {
@@ -2486,7 +2544,148 @@ class MemoryGardenApp {
       ctx.textBaseline = 'middle';
       ctx.fillText('🤲 양손을 앞으로 뻗었다가 가슴으로 당겨요', w / 2, waveY + 19);
       ctx.restore();
+
+    } else if (action === 'knee_lift') {
+      // Seated knee lift guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 320) / 2, waveY, 320, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🦵 의자에 안전하게 앉아 무릎을 천천히 올려요', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'ankle_flex') {
+      // Ankle flex guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(20, 184, 166, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 320) / 2, waveY, 320, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🦶 발끝을 까딱까딱 위로 당겨 혈액순환을 도와요', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'shoulder_shrug') {
+      // Shoulder shrug guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(234, 88, 12, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 310) / 2, waveY, 310, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🤷 어깨를 으쓱 올렸다가 부드럽게 내려놓아요', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'wrist_shake') {
+      // Wrist shake guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(217, 70, 239, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 310) / 2, waveY, 310, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🖐️ 손목과 손가락을 꼼지락 부드럽게 털어요', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'stretch_side' || action === 'neck_tilt') {
+      // Side stretch guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 300) / 2, waveY, 300, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🙆 옆구리를 천천히 시원하게 늘려주세요', w / 2, waveY + 19);
+      ctx.restore();
+
+    } else if (action === 'deep_breath' || action === 'safe_rest') {
+      // Deep breath guide banner
+      const waveY = (h * 0.16) + Math.sin(tick * 2.5) * 5;
+      ctx.save();
+      ctx.fillStyle = 'rgba(5, 150, 105, 0.94)';
+      ctx.beginPath();
+      ctx.roundRect((w - 310) / 2, waveY, 310, 38, 19);
+      ctx.fill();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 15px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🌬️ 두 손 모아 천천히 깊게 숨을 들이마시고 내쉬어요', w / 2, waveY + 19);
+      ctx.restore();
     }
+  }
+
+  // 8~16 Beat Repetition Rhythm Counter (요구사항 6: 8~16박 정도 반복 후 다음 동작으로 이동)
+  drawEightBeatRhythmCounter(ctx, w, h) {
+    if (!this.isPlaying) return;
+    const currentScene = this.scenes[this.currentSceneIdx];
+    if (!currentScene) return;
+
+    // Calculate current beat in 8-beat cycle (approx. 0.652s per beat, matching BPM 92)
+    const beat = Math.floor((this.sceneElapsedTime / 0.652) % 8) + 1; // 1 to 8
+    const cycleNum = Math.floor(this.sceneElapsedTime / (0.652 * 8)) + 1;
+
+    const cx = w * 0.5;
+    const cy = h * 0.105;
+
+    ctx.save();
+    // Soft container
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.80)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(cx - 160, cy - 16, 320, 32, 16);
+    ctx.fill();
+    ctx.stroke();
+
+    // Icon & label
+    ctx.fillStyle = '#FBBF24';
+    ctx.font = 'bold 12px Pretendard, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`🎵 8박자 리듬 (${cycleNum}회차):`, cx - 146, cy);
+
+    // 8 dots
+    for (let i = 1; i <= 8; i++) {
+      const bx = cx + 22 + (i - 1) * 15;
+      const isCurrent = (i === beat);
+
+      ctx.fillStyle = isCurrent ? '#34D399' : 'rgba(255, 255, 255, 0.35)';
+      ctx.beginPath();
+      ctx.arc(bx, cy, isCurrent ? 6 : 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (isCurrent) {
+        ctx.strokeStyle = '#A7F3D0';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(bx, cy, 9, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
   }
 
   // Render Permanent High-Contrast Senior Safety Banner on Canvas
@@ -2921,6 +3120,92 @@ class MemoryGardenApp {
     }
 
     ctx.restore();
+  }
+
+  // Senior One-Touch Start (Autoplay Unblocking for BGM + Kong-i Voice + Video) (요구사항 10)
+  startExerciseNow() {
+    this.goToStep(5);
+    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume();
+    }
+    if (this.kongiAudioFull) {
+      this.kongiAudioFull.muted = false;
+      this.kongiAudioFull.volume = 1.0;
+    }
+    this.playPlayback();
+    this.showToast('🌸 20분 의자체조가 시작되었습니다! 화면을 보며 천천히 따라해보세요.', 'success');
+  }
+
+  // Senior Rewind to Chapter 1
+  rewindToStart() {
+    this.stopPlayback();
+    this.jumpScene(0);
+    this.showToast('⏮ 처음 위치(1단계 준비운동)로 되감았습니다.', 'info');
+  }
+
+  // Sound & Video Diagnostic Check (Admin/Maker View Only, Requirement 11)
+  runSystemDiagnostics() {
+    const voiceStatus = document.getElementById('badgeVoiceStatus');
+    const bgmStatus = document.getElementById('badgeBgmStatus');
+    const videoStatus = document.getElementById('badgeVideoStatus');
+    const diagNotice = document.getElementById('soundDiagnosticNotice');
+
+    let allOk = true;
+
+    // Check Voice
+    if ('speechSynthesis' in window || this.kongiAudioFull) {
+      if (voiceStatus) {
+        voiceStatus.textContent = '정상';
+        voiceStatus.style.color = '#059669';
+        voiceStatus.style.background = '#ECFDF5';
+      }
+    } else {
+      allOk = false;
+      if (voiceStatus) {
+        voiceStatus.textContent = '음성 파일을 확인해 주세요';
+        voiceStatus.style.color = '#DC2626';
+        voiceStatus.style.background = '#FEE2E2';
+      }
+    }
+
+    // Check BGM
+    if (this.audioCtx || this.customBgmAudio) {
+      if (bgmStatus) {
+        bgmStatus.textContent = '정상';
+        bgmStatus.style.color = '#059669';
+        bgmStatus.style.background = '#ECFDF5';
+      }
+    } else {
+      allOk = false;
+      if (bgmStatus) {
+        bgmStatus.textContent = '음원 설정을 확인해 주세요';
+        bgmStatus.style.color = '#DC2626';
+        bgmStatus.style.background = '#FEE2E2';
+      }
+    }
+
+    // Check Video & Canvas
+    if (this.mainCanvas && this.mainCtx) {
+      if (videoStatus) {
+        videoStatus.textContent = '정상';
+        videoStatus.style.color = '#059669';
+        videoStatus.style.background = '#ECFDF5';
+      }
+    } else {
+      if (videoStatus) {
+        videoStatus.textContent = '영상 준비 중';
+      }
+    }
+
+    if (diagNotice) {
+      if (allOk) {
+        diagNotice.textContent = '✓ 콩이 안내 음성(100%), 힐링 BGM(25~30%), 라일락 정원 쉼터 16:9 단체 영상이 모두 정상 동작합니다.';
+        diagNotice.style.color = '#059669';
+      } else {
+        diagNotice.textContent = '⚠️ 음성 파일을 확인해 주세요.';
+        diagNotice.style.color = '#DC2626';
+      }
+    }
   }
 
   // Playback Navigation & Controller

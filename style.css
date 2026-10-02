@@ -2219,3 +2219,89 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   outline-offset: 2px !important;
 }
 
+/* ==========================================================================
+   Senior-Friendly Player Controls & High Contrast Buttons (요구사항 12)
+   ========================================================================== */
+.senior-simple-controls-card {
+  transition: box-shadow 0.25s ease;
+}
+
+.senior-simple-controls-card:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+.btn-senior-play, .btn-senior-pause, .btn-senior-rewind {
+  transition: transform 0.18s var(--ease-spring), box-shadow 0.18s ease, filter 0.18s ease;
+  user-select: none;
+}
+
+.btn-senior-play:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.45);
+}
+
+.btn-senior-pause:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.45);
+}
+
+.btn-senior-rewind:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(71, 85, 105, 0.4);
+}
+
+.btn-senior-play:active, .btn-senior-pause:active, .btn-senior-rewind:active {
+  transform: translateY(1px);
+}
+
+.senior-volume-box {
+  transition: border-color 0.2s ease;
+}
+
+.senior-volume-box:focus-within {
+  border-color: #059669;
+}
+
+/* 6-Course Exercise Chapter Buttons */
+.btn-chapter {
+  transition: all 0.2s ease;
+}
+
+.btn-chapter:hover {
+  background: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+.btn-chapter.active {
+  background: #059669 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+}
+
+/* Sound Diagnostic Card (Admin Only, Requirement 11) */
+.sound-status-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.sound-status-pill {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Collapsible Admin Drawer */
+.admin-collapsible-drawer summary {
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.admin-collapsible-drawer summary:hover {
+  background: #E2E8F0;
+}
+
+.admin-collapsible-drawer[open] summary {
+  border-bottom: 1px solid #CBD5E1;
+}
+
+
