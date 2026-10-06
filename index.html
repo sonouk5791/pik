@@ -33,7 +33,7 @@
       </div>
       <!-- Feature Status Indicators (요구사항 15: 테스트 모드 명확 표시) -->
       <div class="feature-status-group" style="display: flex; gap: 6px; align-items: center; margin-left: 10px;">
-        <span class="badge-status-ready" style="background: #ECFDF5; border: 1px solid #10B981; color: #047857; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">20분 의자체조 [준비 완료]</span>
+        <span class="badge-status-ready" id="headerDurationBadge" style="background: #ECFDF5; border: 1px solid #10B981; color: #047857; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">20분 의자체조 [준비 완료]</span>
         <span class="badge-status-ready" style="background: #FAF5FF; border: 1px solid #8B5CF6; color: #6D28D9; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">라일락마을 쉼터 [배경 통일]</span>
         <span class="badge-status-ready" style="background: #EFF6FF; border: 1px solid #3B82F6; color: #1D4ED8; font-size: 11px; padding: 2px 7px; border-radius: 12px; font-weight: 700;">실시간 립싱크 [정상]</span>
       </div>
@@ -46,6 +46,7 @@
           <option value="preset_lilac_20min" selected>🌸 프로젝트: 라일락 마을 정원 쉼터 콩이 20분 의자체조 (최종 대표 프로그램)</option>
           <option value="preset_lilac_rhythm">🌸 프로젝트: 라일락 마을 쉼터 콩이 리듬체조 (신규 대표 단체 장면)</option>
           <option value="preset_senior_20min">🌟 프로젝트: 콩이 20분 의자체조 (확장 마스터 - 6대 코스)</option>
+          <option value="preset_mini_3min">🌸 프로젝트: 콩이 3분 미니 의자체조</option>
           <option value="preset_senior_test">📂 프로젝트: 콩이 1분 의자체조 (테스트 영상)</option>
           <option value="preset_kongi">📂 프로젝트: 콩이 5분 의자체조 (4인 팀)</option>
           <option value="preset_tori">📂 프로젝트: 토리 10분 인지 건강체조</option>
@@ -107,7 +108,7 @@
           <span class="step-badge">STEP 1</span>
           <h2>캐릭터와 기본 환경을 선택해 주세요</h2>
         </div>
-        <p class="panel-desc"><strong>“라일락마을 정원 쉼터에서 콩이와 친구들, 그리고 한국인 어르신들이 함께 의자에 앉아 천천히 따라 하는 20분 치매 어르신 운동 프로그램”</strong></p>
+        <p class="panel-desc" id="step1Desc"><strong>“라일락마을 정원 쉼터에서 콩이와 친구들, 그리고 한국인 어르신들이 함께 의자에 앉아 천천히 따라 하는 20분 치매 어르신 운동 프로그램”</strong></p>
       </div>
 
       <!-- 20-Minute Senior Chair Exercise Program Master Banner with One-Click Start -->
@@ -115,15 +116,15 @@
         <div style="display: flex; align-items: center; gap: 14px;">
           <div class="together-icon" style="font-size: 32px;">🌸🐶🐿️🐱🐻👴👵</div>
           <div class="together-info">
-            <strong style="color: #4C1D95; font-size: 16px;">라일락마을 정원 쉼터 20분 의자체조 [콩이 메인 진행 & 친구들·어르신 함께 운동]</strong>
-            <span style="color: #6D28D9; display: block; margin-top: 3px;">중앙 앞쪽 콩이(대표 음성 100%), 양옆 토리·나비·보리, 뒤쪽 한국인 어르신 4명이 의자에 앉아 6대 코스 20분 의자체조를 천천히 함께합니다.</span>
+            <strong id="togetherBannerTitle" style="color: #4C1D95; font-size: 16px;">라일락마을 정원 쉼터 20분 의자체조 [콩이 메인 진행 & 친구들·어르신 함께 운동]</strong>
+            <span id="togetherBannerDesc" style="color: #6D28D9; display: block; margin-top: 3px;">중앙 앞쪽 콩이(대표 음성 100%), 양옆 토리·나비·보리, 뒤쪽 한국인 어르신 4명이 의자에 앉아 6대 코스 20분 의자체조를 천천히 함께합니다.</span>
           </div>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
           <button class="btn btn-primary btn-lg" id="btnQuickStartTop" onclick="app.startExerciseNow()" style="background: #059669; border-color: #047857; font-weight: 800; font-size: 15px; padding: 10px 20px; box-shadow: 0 4px 14px rgba(5,150,105,0.35);">
-            <span>🌸 20분 운동 바로 시작하기 (소리 켜기)</span>
+            <span id="btnQuickStartTopText">🌸 20분 운동 바로 시작하기 (소리 켜기)</span>
           </button>
-          <div class="together-status-badge" style="background: #7C3AED;">20분 완성본</div>
+          <div class="together-status-badge" id="togetherStatusBadge" style="background: #7C3AED;">20분 완성본</div>
         </div>
       </div>
 
@@ -218,25 +219,25 @@
         <div class="settings-card">
           <h3 class="section-title">2. 목표 영상 길이</h3>
           <div class="duration-selector" id="durationSelector">
-            <button class="duration-btn active" data-sec="1200">
-              <span class="duration-time">20분</span>
-              <span class="duration-sub">기본 6대 코스 (대표)</span>
+            <button class="duration-btn" data-sec="60">
+              <span class="duration-time">1분 테스트</span>
+              <span class="duration-sub">빠른 동작 검증</span>
             </button>
-            <button class="duration-btn" data-sec="600">
-              <span class="duration-time">10분</span>
-              <span class="duration-sub">인지 복합 체조</span>
+            <button class="duration-btn" data-sec="180">
+              <span class="duration-time">3분</span>
+              <span class="duration-sub">미니 순환 체조</span>
             </button>
             <button class="duration-btn" data-sec="300">
               <span class="duration-time">5분</span>
               <span class="duration-sub">일일 데일리 체조</span>
             </button>
-            <button class="duration-btn" data-sec="60">
-              <span class="duration-time">1분</span>
-              <span class="duration-sub">테스트 스트레칭</span>
+            <button class="duration-btn" data-sec="600">
+              <span class="duration-time">10분</span>
+              <span class="duration-sub">인지 복합 체조</span>
             </button>
-            <button class="duration-btn" data-sec="30">
-              <span class="duration-time">30초</span>
-              <span class="duration-sub">맛보기</span>
+            <button class="duration-btn active" data-sec="1200">
+              <span class="duration-time">20분</span>
+              <span class="duration-sub">기본 6대 코스 (대표)</span>
             </button>
           </div>
 
@@ -496,7 +497,7 @@
           <span class="step-badge">STEP 3</span>
           <h2>AI 장면 자동 분리 및 동작 매칭</h2>
         </div>
-        <p class="panel-desc">라일락마을 정원 쉼터 20분 의자체조 6대 코스에 맞춰 최적의 동작과 박자 순서를 완성했습니다.</p>
+        <p class="panel-desc" id="step3PanelDesc">라일락마을 정원 쉼터 20분 의자체조 6대 코스에 맞춰 최적의 동작과 박자 순서를 완성했습니다.</p>
       </div>
 
       <!-- Scene Board Toolbar -->
@@ -593,7 +594,7 @@
           <span class="step-badge">STEP 4</span>
           <h2>AI 영상 제작 파이프라인 (제작 및 관리자 진단)</h2>
         </div>
-        <p class="panel-desc">라일락마을 정원 쉼터 20분 의자체조 전체 렌더링 전 사운드, 립싱크 및 캐릭터 모션을 사전 검증합니다.</p>
+        <p class="panel-desc" id="step4PanelDesc">라일락마을 정원 쉼터 20분 의자체조 전체 렌더링 전 사운드, 립싱크 및 캐릭터 모션을 사전 검증합니다.</p>
       </div>
 
       <!-- Requirement 11: Sound and Video Status Monitor (Admin / Production Screen Only) -->
@@ -631,9 +632,9 @@
       <div class="test-video-card" id="testVideoCard">
         <div class="test-icon-badge">🎬</div>
         <div class="test-info">
-          <h3>첫 장면 사전 검증 — 라일락마을 정원 쉼터 20분 의자체조 (콩이 메인 & 친구들·어르신 단체)</h3>
-          <p><strong>[라일락 쉼터 20분 6대 코스]</strong> 중앙 앞쪽 <strong>콩이(대표 음성 100% & 6대 립싱크)</strong>와 <strong>토리·나비·보리 및 어르신 4명</strong>이 의자에 앉아 6대 코스(준비운동 3분, 상체 4분, 팔어깨 4분, 하체 3분, 리듬 4분, 마무리 2분)를 진행합니다.</p>
-          <div class="test-status-text" id="testStatusText">상태: 20분 의자체조 음성 및 첫 장면 영상 테스트 대기 중</div>
+          <h3 id="step4TestTitle">첫 장면 사전 검증 — 기억정원 20분 의자체조 (콩이 메인 & 친구들·어르신 단체)</h3>
+          <p id="step4TestDesc"><strong>[라일락 쉼터 20분 6대 코스]</strong> 중앙 앞쪽 <strong>콩이(대표 음성 100% & 6대 립싱크)</strong>와 <strong>토리·나비·보리 및 어르신 4명</strong>이 의자에 앉아 6대 코스(준비운동 3분, 상체 4분, 팔어깨 4분, 하체 3분, 리듬 4분, 마무리 2분)를 진행합니다.</p>
+          <div class="test-status-text" id="testStatusText">상태: 기억정원 20분 의자체조 음성 및 첫 장면 영상 테스트 대기 중</div>
         </div>
         <div class="test-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
           <button class="btn btn-warning btn-lg" id="btnTestKongiVoice" style="background: #F59E0B; border-color: #D97706; color: #FFF; font-weight: 700;">
@@ -648,7 +649,7 @@
       <!-- Test Video Quick Preview Modal or Area -->
       <div class="test-preview-box hidden" id="testPreviewBox">
         <div class="test-preview-header">
-          <span class="tag tag-success">✓ 라일락 쉼터 20분 의자체조 테스트 영상 준비 완료</span>
+          <span class="tag tag-success" id="testPreviewBadge">✓ 라일락 쉼터 20분 의자체조 테스트 영상 준비 완료</span>
           <span class="test-preview-title">첫 장면: 콩이와 친구들 & 어르신 단체 인사 (라일락 마을 정원 쉼터 / 16:9 와이드)</span>
           <button class="btn btn-outline btn-xs" id="btnCloseTestBox">닫기</button>
         </div>
@@ -663,14 +664,14 @@
         <!-- Strict Character Consistency Verification Checklist -->
         <div class="char-consistency-checklist" style="margin-top: 14px; padding: 14px 18px; background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 10px;">
           <h4 style="margin: 0 0 10px 0; color: #166534; font-size: 14px; display: flex; align-items: center; gap: 6px;">
-            <span>🔒</span> <span>기억정원 20분 어르신 의자체조 프로그램 품질 검증 체크리스트</span>
+            <span>🔒</span> <span id="checklistTitle">기억정원 20분 어르신 의자체조 프로그램 품질 검증 체크리스트</span>
           </h4>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; font-size: 13px; color: #14532D;">
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 콩이(노란 트레이닝복/안경 강아지) 화면 중앙 앞쪽 메인 강사 배치</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 토리(다람쥐), 나비(고양이), 보리(곰) 양옆 함께 배치 완료</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 한국인 어르신 4명 이상 뒤쪽 정자 쉼터 안 함께 의자 착석</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 라일락 마을 정원 쉼터 대표 배경 통일 (16:9 정면 고정)</div>
-            <div><span style="color:#15803D; font-weight:bold;">✓</span> 20분 6대 안전 의자체조 코스 구성 (총 1,200초 / 8~16박 반복)</div>
+            <div id="checklistDurationItem"><span style="color:#15803D; font-weight:bold;">✓</span> 20분 6대 안전 의자체조 코스 구성 (총 1,200초 / 8~16박 반복)</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> 전 구간 100% 의자 착석 (점프/빠른회전/허리비틀기 금지)</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> “무리하지 말고 천천히 따라하세요” 안심 문구 표출</div>
             <div><span style="color:#15803D; font-weight:bold;">✓</span> “힘드시면 언제든 쉬어도 괜찮아요” 안심 문구 표출</div>
@@ -745,9 +746,9 @@
       <div class="panel-header">
         <div class="panel-title-wrap">
           <span class="step-badge">STEP 5</span>
-          <h2>라일락마을 정원 쉼터 20분 의자체조 플레이어</h2>
+          <h2 id="step5PlayerTitle">기억정원 20분 의자체조 플레이어</h2>
         </div>
-        <p class="panel-desc"><strong>“라일락마을 정원 쉼터에서 콩이와 친구들, 그리고 한국인 어르신들이 함께 의자에 앉아 천천히 따라 하는 20분 치매 어르신 운동 프로그램”</strong></p>
+        <p class="panel-desc" id="step5PanelDesc"><strong>“라일락마을 정원 쉼터에서 콩이와 친구들, 그리고 한국인 어르신들이 함께 의자에 앉아 천천히 따라 하는 20분 치매 어르신 운동 프로그램”</strong></p>
       </div>
 
       <!-- Main Senior-Friendly Cinema Layout -->
@@ -755,7 +756,7 @@
         
         <!-- 6-Course Exercise Chapter Quick Navigation Bar -->
         <div class="chapters-nav-bar" id="chaptersNavBar" style="display: flex; gap: 8px; overflow-x: auto; padding: 12px 16px; background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 14px; margin-bottom: 14px; align-items: center;">
-          <span id="chaptersBarTitle" style="font-weight: 800; color: #166534; font-size: 14px; white-space: nowrap;">⏱️ 20분 6대 코스:</span>
+          <span id="chaptersBarTitle" style="font-weight: 800; color: #166534; font-size: 14px; white-space: nowrap;">⏱️ 기억정원 20분 6대 코스:</span>
           <button class="btn btn-sm btn-chapter active" id="btnChap1" onclick="app.jumpToChapter(1)" style="padding: 6px 14px; font-size: 13px; border-radius: 20px; background: #059669; color: #fff; font-weight: 700; border: none; cursor: pointer;">1단계: 준비운동 (3분)</button>
           <button class="btn btn-sm btn-chapter" id="btnChap2" onclick="app.jumpToChapter(2)" style="padding: 6px 14px; font-size: 13px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">2단계: 상체운동 (4분)</button>
           <button class="btn btn-sm btn-chapter" id="btnChap3" onclick="app.jumpToChapter(3)" style="padding: 6px 14px; font-size: 13px; border-radius: 20px; background: #E2E8F0; color: #334155; font-weight: 600; border: none; cursor: pointer;">3단계: 팔·어깨 운동 (4분)</button>
@@ -771,7 +772,7 @@
           <!-- Video Overlay Top Brand Info -->
           <div class="video-overlay-top">
             <div class="overlay-brand">
-              <span id="playerBrandTitle">🌸 라일락마을 정원 쉼터 20분 의자체조</span>
+              <span id="playerBrandTitle">🌸 기억정원 20분 의자체조</span>
             </div>
             <div class="overlay-scene-badge" id="overlaySceneBadge">
               1단계 : 콩이 인사와 준비호흡 (3분)
@@ -876,11 +877,11 @@
               <!-- Final Video Export Card -->
               <div class="export-card" style="background: #FFF; padding: 18px; border-radius: 12px; border: 1px solid #E2E8F0;">
                 <h3 class="export-title" style="font-size: 16px; margin-bottom: 6px;">🎬 최종 영상 파일 만들기</h3>
-                <p class="export-desc" style="font-size: 13px; color: #64748B; margin-bottom: 12px;">라일락마을 정원 쉼터 20분 의자체조 고화질 비디오를 생성하고 MP4 파일로 저장합니다.</p>
+                <p class="export-desc" id="exportFinalDesc" style="font-size: 13px; color: #64748B; margin-bottom: 12px;">라일락마을 정원 쉼터 20분 의자체조 고화질 비디오를 생성하고 MP4 파일로 저장합니다.</p>
                 
                 <div class="export-specs" style="margin-bottom: 14px; font-size: 13px;">
                   <div class="spec-row" style="display: flex; justify-content: space-between; padding: 4px 0;"><span class="spec-k">화면 비율</span><span class="spec-v">16:9 와이드 정면 고정</span></div>
-                  <div class="spec-row" style="display: flex; justify-content: space-between; padding: 4px 0;"><span class="spec-k">총 시간</span><span class="spec-v">20:00 (1,200초)</span></div>
+                  <div class="spec-row" style="display: flex; justify-content: space-between; padding: 4px 0;"><span class="spec-k">총 시간</span><span class="spec-v" id="exportSpecTotalTime">20:00 (1,200초)</span></div>
                   <div class="spec-row" style="display: flex; justify-content: space-between; padding: 4px 0;"><span class="spec-k">배경 및 단체</span><span class="spec-v text-emerald">라일락마을 정원 쉼터</span></div>
                   <div class="spec-row" style="display: flex; justify-content: space-between; padding: 4px 0;"><span class="spec-k">오디오 믹싱</span><span class="spec-v">콩이 보이스 100% + BGM 덕킹</span></div>
                 </div>

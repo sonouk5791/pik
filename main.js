@@ -178,6 +178,34 @@ const PRESETS = {
 두 손을 모으고 깊게 숨을 들이마시고... 천천히 내쉽니다.
 어르신들, 오늘 20분 동안 정말 훌륭하게 잘하셨어요! 늘 건강하세요!`
   },
+  preset_mini_3min: {
+    name: '🌸 콩이 3분 미니 의자체조 (미니 순환)',
+    char: 'kongi',
+    duration: 180,
+    bg: 'bg_lilac',
+    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
+    bgm: 'lilac_walk',
+    script: `어르신들 안녕하세요! 라일락 향기 가득한 정원 쉼터에서 함께하는 3분 미니 의자체조예요.
+의자에 편안히 앉아 코로 맑은 숨을 들이마시고 입으로 천천히 내쉬어 보세요.
+양손을 천천히 위로 올려볼게요. 시원하게 기지개를 켜보세요.
+양팔을 옆으로도 크게 벌려 가슴을 활짝 펴주세요. 어깨도 으쓱 올려봅니다.
+신나게 손뼉도 짝짝 치고 무릎도 살짝 올려보아요.
+두 손 모아 깊게 숨을 내쉬며 마칩니다. 오늘도 참 잘하셨어요!`
+  },
+  preset_senior_test: {
+    name: '📂 콩이 1분 의자체조 (테스트 영상)',
+    char: 'kongi',
+    duration: 60,
+    bg: 'bg_lilac',
+    voice: { gender: 'female_warm', tone: 'friendly', pitch: 1.0, speed: 0.9, emotion: 'warm' },
+    bgm: 'lilac_walk',
+    script: `어르신들 안녕하세요! 라일락 정원 쉼터에서 함께하는 1분 테스트 체조 시간이에요.
+의자에 편안히 앉아 코로 맑은 숨을 들이마시고 천천히 내쉬어 보세요.
+양손을 천천히 위로 올려볼게요. 시원하게 기지개를 켜보세요.
+양팔을 옆으로 벌려 가슴을 활짝 펴주세요.
+신나게 손뼉을 짝짝 쳐볼게요! 하나 둘 셋 넷!
+두 손 모아 편안하게 호흡을 정리합니다. 참 잘하셨어요!`
+  },
   preset_kongi: {
     name: '기억정원 4인 의자체조 (콩이·토리·나비·보리 함께 운동)',
     char: 'kongi',
@@ -431,10 +459,8 @@ class MemoryGardenApp {
     // Target Duration
     document.querySelectorAll('.duration-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.targetDuration = parseInt(btn.dataset.sec, 10);
-        this.updateDurationNotice();
+        const sec = parseInt(btn.dataset.sec, 10);
+        this.setDuration(sec);
       });
     });
 
@@ -517,24 +543,22 @@ class MemoryGardenApp {
     document.getElementById('btnPresetLilacRhythm')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_lilac_rhythm.script);
       this.selectedBg = 'bg_lilac';
-      this.targetDuration = 1200;
-      this.updateDurationNotice(1200);
+      this.setDuration(1200);
       this.showToast('🌸 라일락 마을 쉼터 콩이 리듬체조 대본이 적용되었습니다.', 'info');
     });
     document.getElementById('btnPresetTest1Min')?.addEventListener('click', () => {
-      this.setScriptContent(PRESETS.preset_lilac_rhythm.script);
-      this.targetDuration = 60;
-      this.updateDurationNotice(60);
+      this.setScriptContent(PRESETS.preset_senior_test ? PRESETS.preset_senior_test.script : PRESETS.preset_lilac_rhythm.script);
+      this.setDuration(60);
       this.showToast('1분 테스트 체조 예시 대본이 적용되었습니다.', 'info');
     });
     document.getElementById('btnPreset20Min')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_senior_20min.script);
-      this.targetDuration = 1200;
-      this.updateDurationNotice(1200);
+      this.setDuration(1200);
       this.showToast('20분 의자체조 마스터 예시 대본이 적용되었습니다.', 'info');
     });
     document.getElementById('btnPreset1')?.addEventListener('click', () => {
       this.setScriptContent(PRESETS.preset_kongi.script);
+      this.setDuration(300);
     });
     document.getElementById('btnPreset2')?.addEventListener('click', () => {
       this.setScriptContent(`어르신들, 반가워요!
@@ -841,6 +865,7 @@ class MemoryGardenApp {
     if (bgmSel) bgmSel.value = p.bgm;
 
     this.setScriptContent(p.script);
+    this.setDuration(p.duration || 1200);
     this.analyzeScript(false);
     this.showToast(`'${p.name}' 프로젝트를 불러왔습니다.`, 'success');
   }
@@ -1201,6 +1226,194 @@ class MemoryGardenApp {
     }
   }
 
+  getDurationLabel(sec) {
+    const s = sec || this.targetDuration || 1200;
+    if (s === 60) return '1분';
+    if (s === 180) return '3분';
+    if (s === 300) return '5분';
+    if (s === 600) return '10분';
+    if (s === 1200) return '20분';
+    const m = Math.floor(s / 60);
+    const rem = s % 60;
+    if (m > 0 && rem > 0) return `${m}분 ${rem}초`;
+    if (m > 0) return `${m}분`;
+    return `${rem}초`;
+  }
+
+  getProgramTitle(sec) {
+    const durLabel = this.getDurationLabel(sec);
+    return `기억정원 ${durLabel} 의자체조`;
+  }
+
+  formatNumber(num) {
+    return Number(num || 0).toLocaleString('ko-KR');
+  }
+
+  setDuration(sec) {
+    this.targetDuration = Number(sec) || 1200;
+
+    // 1. Update selector buttons
+    document.querySelectorAll('.duration-btn').forEach(btn => {
+      const bSec = parseInt(btn.dataset.sec, 10);
+      btn.classList.toggle('active', bSec === this.targetDuration);
+    });
+
+    // 2. Rescale all current scenes so sum(duration) === targetDuration
+    this.rescaleScenesToTargetDuration();
+
+    // 3. Update all UI text across STEP 1 to STEP 5
+    this.updateAllDurationDisplays();
+
+    // 4. Update timeline, seekbar, chapter buttons, and badges
+    this.updateSeekBarAndTimers();
+    this.updateChapterButtons();
+    this.renderSceneCards();
+    this.renderPipelineGrid();
+    this.renderJumpList();
+
+    const label = this.getDurationLabel(this.targetDuration);
+    this.showToast(`영상 길이가 '${label}'(으)로 설정되었습니다. 전체 단계가 연동되었습니다.`, 'info');
+  }
+
+  rescaleScenesToTargetDuration() {
+    if (!this.scenes || this.scenes.length === 0) return;
+
+    const count = this.scenes.length;
+    if (count === 6) {
+      const weights = [3, 4, 4, 3, 4, 2];
+      const totalW = 20;
+      let allocated = 0;
+      this.scenes.forEach((scene, i) => {
+        if (i === count - 1) {
+          scene.duration = Math.max(3, this.targetDuration - allocated);
+        } else {
+          scene.duration = Math.max(3, Math.round((this.targetDuration * weights[i]) / totalW));
+          allocated += scene.duration;
+        }
+      });
+    } else {
+      const lineWeights = this.scenes.map(s => Math.max(5, (s.script ? s.script.length : 10) + 10));
+      const totalW = lineWeights.reduce((a, b) => a + b, 0) || 1;
+      let allocated = 0;
+      this.scenes.forEach((scene, i) => {
+        if (i === count - 1) {
+          scene.duration = Math.max(3, this.targetDuration - allocated);
+        } else {
+          scene.duration = Math.max(3, Math.round((this.targetDuration * lineWeights[i]) / totalW));
+          allocated += scene.duration;
+        }
+      });
+    }
+  }
+
+  updateAllDurationDisplays() {
+    const durLabel = this.getDurationLabel();
+    const progTitle = this.getProgramTitle();
+    const totalSecStr = this.formatNumber(this.targetDuration);
+    const timeFormatted = this.formatTime(this.targetDuration);
+
+    // Header badge
+    const headerBadge = document.getElementById('headerDurationBadge');
+    if (headerBadge) headerBadge.textContent = `${durLabel} 의자체조 [준비 완료]`;
+
+    // STEP 1 Banners
+    const step1Desc = document.getElementById('step1Desc');
+    if (step1Desc) step1Desc.innerHTML = `<strong>“라일락마을 정원 쉼터에서 콩이와 친구들, 그리고 한국인 어르신들이 함께 의자에 앉아 천천히 따라 하는 ${durLabel} 치매 어르신 운동 프로그램”</strong>`;
+
+    const togTitle = document.getElementById('togetherBannerTitle');
+    if (togTitle) togTitle.textContent = `라일락마을 정원 쉼터 ${durLabel} 의자체조 [콩이 메인 진행 & 친구들·어르신 함께 운동]`;
+
+    const togDesc = document.getElementById('togetherBannerDesc');
+    if (togDesc) togDesc.textContent = `중앙 앞쪽 콩이(대표 음성 100%), 양옆 토리·나비·보리, 뒤쪽 한국인 어르신 4명이 의자에 앉아 ${durLabel} 의자체조를 천천히 함께합니다.`;
+
+    const btnQuickText = document.getElementById('btnQuickStartTopText');
+    if (btnQuickText) btnQuickText.textContent = `🌸 ${durLabel} 운동 바로 시작하기 (소리 켜기)`;
+
+    const togStatus = document.getElementById('togetherStatusBadge');
+    if (togStatus) togStatus.textContent = `${durLabel} 완성본`;
+
+    const durNotice = document.getElementById('durationNoticeText');
+    if (durNotice) durNotice.innerHTML = `치매 어르신 맞춤 ${durLabel} 코스(준비운동·상체·팔어깨·하체·리듬·마무리)가 최적으로 설정되었습니다.`;
+
+    // STEP 2
+    const estDur = document.getElementById('estDuration');
+    if (estDur) estDur.textContent = `예상 소요 시간: 약 ${durLabel}`;
+
+    const btnAnalyze = document.getElementById('btnAnalyzeScript');
+    if (btnAnalyze) {
+      btnAnalyze.innerHTML = `<span class="sparkle">✨</span><span>AI ${durLabel} 장면 분석하기</span>`;
+    }
+
+    // STEP 3
+    const s3Desc = document.getElementById('step3PanelDesc');
+    if (s3Desc) s3Desc.textContent = `라일락마을 정원 쉼터 ${durLabel} 의자체조 코스에 맞춰 최적의 동작과 박자 순서를 완성했습니다.`;
+
+    const totalDurBadge = document.getElementById('totalDurationBadge');
+    if (totalDurBadge) totalDurBadge.textContent = `총 소요 시간: ${durLabel} (${totalSecStr}초)`;
+
+    // STEP 4
+    const s4Desc = document.getElementById('step4PanelDesc');
+    if (s4Desc) s4Desc.textContent = `라일락마을 정원 쉼터 ${durLabel} 의자체조 전체 렌더링 전 사운드, 립싱크 및 캐릭터 모션을 사전 검증합니다.`;
+
+    const s4Title = document.getElementById('step4TestTitle');
+    if (s4Title) s4Title.textContent = `첫 장면 사전 검증 — ${progTitle} (콩이 메인 & 친구들·어르신 단체)`;
+
+    const s4TestDesc = document.getElementById('step4TestDesc');
+    if (s4TestDesc) s4TestDesc.innerHTML = `<strong>[라일락 쉼터 ${durLabel} 코스]</strong> 중앙 앞쪽 <strong>콩이(대표 음성 100% & 6대 립싱크)</strong>와 <strong>토리·나비·보리 및 어르신 4명</strong>이 의자에 앉아 ${durLabel} 안전 의자체조 코스를 진행합니다.`;
+
+    const testStat = document.getElementById('testStatusText');
+    if (testStat && !this.testPassed) {
+      testStat.textContent = `상태: ${progTitle} 음성 및 첫 장면 영상 테스트 대기 중`;
+    }
+
+    const testBadge = document.getElementById('testPreviewBadge');
+    if (testBadge) testBadge.textContent = `✓ 라일락 쉼터 ${durLabel} 의자체조 테스트 영상 준비 완료`;
+
+    const checkTitle = document.getElementById('checklistTitle');
+    if (checkTitle) checkTitle.textContent = `${progTitle} 프로그램 품질 검증 체크리스트`;
+
+    const checkDurItem = document.getElementById('checklistDurationItem');
+    if (checkDurItem) checkDurItem.innerHTML = `<span style="color:#15803D; font-weight:bold;">✓</span> ${durLabel} 6대 안전 의자체조 코스 구성 (총 ${totalSecStr}초 / 8~16박 반복)`;
+
+    // STEP 5
+    const s5Title = document.getElementById('step5PlayerTitle');
+    if (s5Title) s5Title.textContent = `${progTitle} 플레이어`;
+
+    const s5Desc = document.getElementById('step5PanelDesc');
+    if (s5Desc) s5Desc.innerHTML = `<strong>“라일락마을 정원 쉼터에서 콩이와 친구들, 그리고 한국인 어르신들이 함께 의자에 앉아 천천히 따라 하는 ${durLabel} 치매 어르신 운동 프로그램”</strong>`;
+
+    const chapTitle = document.getElementById('chaptersBarTitle');
+    if (chapTitle) chapTitle.textContent = `⏱️ ${progTitle} 코스:`;
+
+    const playerBrand = document.getElementById('playerBrandTitle');
+    if (playerBrand) playerBrand.textContent = `🌸 ${progTitle}`;
+
+    const expDesc = document.getElementById('exportFinalDesc');
+    if (expDesc) expDesc.textContent = `라일락마을 정원 쉼터 ${durLabel} 의자체조 고화질 비디오를 생성하고 MP4 파일로 저장합니다.`;
+
+    const expSpecTime = document.getElementById('exportSpecTotalTime');
+    if (expSpecTime) expSpecTime.textContent = `${timeFormatted} (${totalSecStr}초)`;
+
+    const btnDown = document.getElementById('btnDownloadFinalVideo');
+    if (btnDown) btnDown.innerHTML = `<span>📥 ${durLabel} 의자체조 영상 다운로드 (MP4)</span>`;
+
+    const totalTimeLbl = document.getElementById('totalTimeLabel');
+    if (totalTimeLbl) totalTimeLbl.textContent = timeFormatted;
+  }
+
+  updateChapterButtons() {
+    const defaultNames = ['준비운동', '상체운동', '팔·어깨 운동', '하체 운동', '리듬운동', '마무리 스트레칭'];
+    for (let i = 1; i <= 6; i++) {
+      const btn = document.getElementById(`btnChap${i}`);
+      if (btn) {
+        const scene = this.scenes[i - 1];
+        const actionLabel = scene ? scene.actionName : defaultNames[i - 1];
+        const durStr = scene ? this.formatSeconds(scene.duration) : '';
+        btn.textContent = durStr ? `${i}단계: ${actionLabel} (${durStr})` : `${i}단계: ${actionLabel}`;
+      }
+    }
+  }
+
   updateScriptStats() {
     const text = document.getElementById('scriptInput')?.value || '';
     const charCount = text.length;
@@ -1209,34 +1422,22 @@ class MemoryGardenApp {
     const rawLines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
     const sceneCount = Math.max(1, rawLines.length);
 
-    // Korean speaking speed for seniors ~ 3 to 4 characters per second + pauses
-    const estSec = Math.round(charCount / 3.2) + (sceneCount * 2);
-
     document.getElementById('charCount').textContent = `총 ${charCount}자`;
-    document.getElementById('estDuration').textContent = `예상 소요 시간: 약 ${estSec}초`;
+    document.getElementById('estDuration').textContent = `예상 소요 시간: 약 ${this.getDurationLabel()}`;
     document.getElementById('estSceneCount').textContent = `예상 장면: ${sceneCount}개`;
 
-    this.updateDurationNotice(estSec);
+    this.updateDurationNotice();
   }
 
-  updateDurationNotice(estSec = 30) {
+  updateDurationNotice(estSec = null) {
     const notice = document.getElementById('durationNoticeText');
     if (!notice) return;
+    const durLabel = this.getDurationLabel();
+    const durSecStr = this.formatSeconds(this.targetDuration);
 
-    if (estSec < this.targetDuration) {
-      const diff = this.targetDuration - estSec;
-      notice.innerHTML = `대본 길이(약 ${estSec}초)가 선택하신 목표 시간(<strong>${this.formatSeconds(this.targetDuration)}</strong>)보다 짧습니다. AI가 어르신 안전 심호흡, 반복 체조 및 중간 휴식 구간(+${diff}초)을 자동 추가합니다.`;
-      notice.parentElement.style.borderColor = '#FDE68A';
-      notice.parentElement.style.background = '#FFFBEB';
-    } else if (estSec > this.targetDuration + 20) {
-      notice.innerHTML = `⚠️ 대본 내용이 선택하신 목표 시간(<strong>${this.formatSeconds(this.targetDuration)}</strong>)보다 깁니다. 영상 길이를 늘리거나 대본을 다듬어 주세요.`;
-      notice.parentElement.style.borderColor = '#FCA5A5';
-      notice.parentElement.style.background = '#FEF2F2';
-    } else {
-      notice.innerHTML = `목표 영상 시간(<strong>${this.formatSeconds(this.targetDuration)}</strong>)과 대본 분량이 최적으로 일치합니다.`;
-      notice.parentElement.style.borderColor = '#A7F3D0';
-      notice.parentElement.style.background = '#ECFDF5';
-    }
+    notice.innerHTML = `치매 어르신 맞춤 <strong>${durLabel}</strong> 코스(준비운동·상체·팔어깨·하체·리듬·마무리, 총 ${durSecStr})가 최적으로 설정되었습니다.`;
+    notice.parentElement.style.borderColor = '#A7F3D0';
+    notice.parentElement.style.background = '#ECFDF5';
   }
 
   // Step 3: AI Scene Auto Separation & Motion Matching
@@ -1259,21 +1460,41 @@ class MemoryGardenApp {
       .filter(line => line.length > 0);
 
     const generatedScenes = [];
+    const count = lines.length;
+
+    // Proportional duration calculation ensuring EXACT sum == targetDuration
+    const durations = [];
+    if (count === 6) {
+      const weights = [3, 4, 4, 3, 4, 2];
+      const totalW = 20;
+      let allocated = 0;
+      for (let i = 0; i < 6; i++) {
+        if (i === 5) {
+          durations.push(Math.max(3, this.targetDuration - allocated));
+        } else {
+          const d = Math.max(3, Math.round((this.targetDuration * weights[i]) / totalW));
+          durations.push(d);
+          allocated += d;
+        }
+      }
+    } else {
+      const lineWeights = lines.map(l => Math.max(5, l.length + 10));
+      const totalW = lineWeights.reduce((a, b) => a + b, 0) || 1;
+      let allocated = 0;
+      for (let i = 0; i < count; i++) {
+        if (i === count - 1) {
+          durations.push(Math.max(3, this.targetDuration - allocated));
+        } else {
+          const d = Math.max(3, Math.round((this.targetDuration * lineWeights[i]) / totalW));
+          durations.push(d);
+          allocated += d;
+        }
+      }
+    }
 
     lines.forEach((line, idx) => {
       const matchedActionKey = this.matchActionFromText(line);
       const actionMeta = EXERCISE_ACTIONS[matchedActionKey] || EXERCISE_ACTIONS.safe_rest;
-      
-      // Calculate realistic duration per scene
-      let duration = Math.max(5, Math.min(14, Math.round(line.length / 2.8) + 3));
-      if (lines.length === 6 && this.targetDuration === 60) {
-        const testDurations = [5, 10, 10, 10, 10, 15];
-        duration = testDurations[idx] || 10;
-      } else if (lines.length === 6 && this.targetDuration === 1200) {
-        // 요구사항 8: 20분 의자체조 6대 코스 (3분, 4분, 4분, 3분, 4분, 2분 = 총 20분, 1,200초)
-        const durations20m = [180, 240, 240, 180, 240, 120];
-        duration = durations20m[idx] || 200;
-      }
 
       generatedScenes.push({
         id: `scene_${Date.now()}_${idx}`,
@@ -1283,38 +1504,20 @@ class MemoryGardenApp {
         actionName: actionMeta.name,
         actionIcon: actionMeta.icon,
         safeRule: actionMeta.safeRule,
-        duration: duration,
+        duration: durations[idx] || 10,
         bg: this.selectedBg,
         status: 'waiting' // 'waiting' | 'generating' | 'completed' | 'error'
       });
     });
 
-    // Smart Balance: If script total duration is much shorter than target duration, auto-insert safety pauses & repetitions
-    let currentTotalDuration = generatedScenes.reduce((acc, s) => acc + s.duration, 0);
-    if (this.targetDuration >= 300 && currentTotalDuration < this.targetDuration && !(lines.length === 6 && this.targetDuration === 1200)) {
-      // Insert safe resting / breathing scene
-      generatedScenes.splice(Math.floor(generatedScenes.length / 2), 0, {
-        id: `scene_safe_rest_${Date.now()}`,
-        num: generatedScenes.length + 1,
-        script: '바른 자세로 앉아 잠시 숨을 고르며 고요히 이완합니다.',
-        action: 'safe_rest',
-        actionName: EXERCISE_ACTIONS.safe_rest.name,
-        actionIcon: EXERCISE_ACTIONS.safe_rest.icon,
-        safeRule: EXERCISE_ACTIONS.safe_rest.safeRule,
-        duration: 10,
-        bg: this.selectedBg,
-        status: 'waiting'
-      });
-    }
-
-    // Re-index scene numbers
-    generatedScenes.forEach((s, i) => s.num = i + 1);
-
     this.scenes = generatedScenes;
     this.renderSceneCards();
+    this.updateChapterButtons();
+    this.updateSeekBarAndTimers();
+    this.updateAllDurationDisplays();
 
     if (notify) {
-      this.showToast(`AI가 대본을 분석하여 총 ${this.scenes.length}개의 장면과 안전 체조 동작을 매칭했습니다!`, 'success');
+      this.showToast(`AI가 대본을 분석하여 총 ${this.scenes.length}개의 장면과 ${this.getDurationLabel()} 의자체조 타임라인을 완성했습니다!`, 'success');
     }
   }
 
@@ -1378,9 +1581,11 @@ class MemoryGardenApp {
 
     container.innerHTML = '';
 
-    const totalDuration = this.scenes.reduce((sum, s) => sum + s.duration, 0);
-    document.getElementById('sceneCountBadge').textContent = `총 ${this.scenes.length}개 장면`;
-    document.getElementById('totalDurationBadge').textContent = `총 소요 시간: ${this.formatSeconds(totalDuration)}`;
+    const totalDuration = this.scenes.reduce((sum, s) => sum + s.duration, 0) || this.targetDuration;
+    const sceneCountEl = document.getElementById('sceneCountBadge');
+    if (sceneCountEl) sceneCountEl.textContent = `총 ${this.scenes.length}개 장면`;
+    const durBadgeEl = document.getElementById('totalDurationBadge');
+    if (durBadgeEl) durBadgeEl.textContent = `총 소요 시간: ${this.getDurationLabel(totalDuration)} (${this.formatNumber(totalDuration)}초)`;
 
     this.scenes.forEach((scene, index) => {
       const card = document.createElement('div');
@@ -2772,25 +2977,10 @@ class MemoryGardenApp {
     ctx.restore();
   }
 
-  // Jump to 20-Minute Course Chapter (1 to 6)
+  // Jump to Course Chapter (1 to 6)
   jumpToChapter(chapterNum) {
-    const chapterMap = {
-      1: { action: 'wave', alt: 'breath' },
-      2: { action: 'neck_tilt', alt: 'shoulder_shrug' },
-      3: { action: 'arms_up', alt: 'arms_side' },
-      4: { action: 'clap', alt: 'finger_wiggle' },
-      5: { action: 'knee_lift', alt: 'ankle_flex' },
-      6: { action: 'stretch_side', alt: 'deep_breath' }
-    };
-
-    const target = chapterMap[chapterNum] || chapterMap[1];
-
-    // Find first scene matching this chapter action
-    let targetIdx = this.scenes.findIndex(s => s.action === target.action || s.action === target.alt);
-    if (targetIdx === -1) {
-      targetIdx = Math.min(this.scenes.length - 1, Math.floor(((chapterNum - 1) / 6) * this.scenes.length));
-    }
-
+    if (this.scenes.length === 0) return;
+    const targetIdx = Math.min(this.scenes.length - 1, chapterNum - 1);
     this.jumpScene(targetIdx);
 
     // Update chapter button styling
@@ -2805,15 +2995,18 @@ class MemoryGardenApp {
       }
     }
 
-    const chapterTitles = {
-      1: '1코스: 인사와 준비호흡 (3분)',
-      2: '2코스: 목·어깨 풀기 (4분)',
-      3: '3코스: 양팔 올리기·벌리기 (4분)',
-      4: '4코스: 손뼉치기·손운동 (3분)',
-      5: '5코스: 무릎 들기·발목 운동 (4분)',
-      6: '6코스: 마무리 스트레칭 (2분)'
+    const curScene = this.scenes[targetIdx];
+    const durLabel = curScene ? ` (${this.formatSeconds(curScene.duration)})` : '';
+    const chapterNames = {
+      1: '1단계: 준비운동',
+      2: '2단계: 상체운동',
+      3: '3단계: 팔·어깨 운동',
+      4: '4단계: 하체 운동',
+      5: '5단계: 리듬운동',
+      6: '6단계: 마무리 스트레칭'
     };
-    this.showToast(`⏱️ ${chapterTitles[chapterNum] || chapterNum + '코스'}로 이동했습니다.`, 'info');
+    const title = (chapterNames[chapterNum] || `${chapterNum}단계`) + durLabel;
+    this.showToast(`⏱️ ${title}(으)로 이동했습니다.`, 'info');
   }
 
   // Draw Warm Encouragement Bubbles from Seniors
@@ -3190,7 +3383,7 @@ class MemoryGardenApp {
       this.kongiAudioFull.volume = 1.0;
     }
     this.playPlayback();
-    this.showToast('🌸 20분 의자체조가 시작되었습니다! 화면을 보며 천천히 따라해보세요.', 'success');
+    this.showToast(`🌸 ${this.getDurationLabel()} 의자체조가 시작되었습니다! 화면을 보며 천천히 따라해보세요.`, 'success');
   }
 
   // Senior Rewind to Chapter 1
@@ -3451,8 +3644,7 @@ class MemoryGardenApp {
   // Final Video Export (Canvas stream + MediaRecorder download with Real Audio & BGM Track) (요구사항 12)
   async exportFinalVideoFile() {
     if (!this.mainCanvas) return;
-    const isFull20Min = this.targetDuration >= 1200;
-    const downloadFileName = isFull20Min ? 'kongi-20min-chair-exercise.mp4' : 'kongi-exercise-test-01.mp4';
+    const downloadFileName = `기억정원_${this.getDurationLabel()}_의자체조.mp4`;
     
     this.showToast(`🎬 ${downloadFileName} 고화질 영상(음성 & BGM 포함) 인코딩을 시작합니다...`, 'info');
 
@@ -3555,7 +3747,7 @@ class MemoryGardenApp {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `기억정원_의자체조_자막_${this.selectedChar}.srt`;
+    a.download = `기억정원_${this.getDurationLabel()}_의자체조_자막_${this.selectedChar}.srt`;
     a.click();
     URL.revokeObjectURL(url);
     this.showToast('SRT 자막 파일이 다운로드되었습니다.', 'success');
@@ -3563,9 +3755,10 @@ class MemoryGardenApp {
 
   exportScriptTXT() {
     let txt = `====================================================\n`;
-    txt += `기억정원 어르신 의자체조 영상 대본집\n`;
+    txt += `기억정원 ${this.getDurationLabel()} 어르신 의자체조 영상 대본집\n`;
     txt += `캐릭터: ${this.getCharName(this.selectedChar)}\n`;
     txt += `총 장면: ${this.scenes.length}개\n`;
+    txt += `목표 시간: ${this.getDurationLabel()} (${this.formatNumber(this.targetDuration)}초)\n`;
     txt += `안전 수칙: 의자 착석 및 8대 안전 규칙 적용 완료\n`;
     txt += `====================================================\n\n`;
 
@@ -3579,7 +3772,7 @@ class MemoryGardenApp {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `기억정원_체조대본_${this.selectedChar}.txt`;
+    a.download = `기억정원_${this.getDurationLabel()}_체조대본_${this.selectedChar}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     this.showToast('체조 대본 문서가 다운로드되었습니다.', 'success');
